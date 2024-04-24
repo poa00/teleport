@@ -288,6 +288,16 @@ func TestAppCommands(t *testing.T) {
 									}, setHomePath(loginPath), webauthnLoginOpt)
 								}()
 
+								if requireMFAType == types.RequireMFAType_SESSION {
+									// mfa verified proxy certs should not be saved to disk.
+									err = Run(context.Background(), []string{
+										"app",
+										"config",
+										app.name,
+									}, setHomePath(loginPath))
+									require.Error(t, err)
+								}
+
 								require.EventuallyWithT(t, func(t *assert.CollectT) {
 									testDummyAppConn(t, app.name, fmt.Sprintf("http://127.0.0.1:%v", localProxyPort))
 								}, time.Second, 100*time.Millisecond)
