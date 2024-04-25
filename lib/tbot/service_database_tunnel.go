@@ -129,7 +129,7 @@ func (s *DatabaseTunnelService) buildLocalProxyConfig(ctx context.Context) (lpCf
 			defer span.End()
 
 			// Check if the certificate needs reissuing, if so, reissue.
-			if err := lp.CheckDBCerts(tlsca.RouteToDatabase{
+			if err := lp.CheckDBCert(tlsca.RouteToDatabase{
 				ServiceName: routeToDatabase.ServiceName,
 				Protocol:    routeToDatabase.Protocol,
 				Database:    routeToDatabase.Database,
@@ -140,7 +140,7 @@ func (s *DatabaseTunnelService) buildLocalProxyConfig(ctx context.Context) (lpCf
 				if err != nil {
 					return trace.Wrap(err, "issuing cert")
 				}
-				lp.SetCerts([]tls.Certificate{*cert})
+				lp.SetCert(*cert)
 			}
 			return nil
 		},
@@ -157,7 +157,7 @@ func (s *DatabaseTunnelService) buildLocalProxyConfig(ctx context.Context) (lpCf
 		RemoteProxyAddr:    proxyAddr,
 		ParentContext:      ctx,
 		Protocols:          []common.Protocol{alpnProtocol},
-		Certs:              []tls.Certificate{*dbCert},
+		Cert:               *dbCert,
 		InsecureSkipVerify: s.botCfg.Insecure,
 	}
 	if client.IsALPNConnUpgradeRequired(
