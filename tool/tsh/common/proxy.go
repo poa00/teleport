@@ -19,7 +19,6 @@
 package common
 
 import (
-	"context"
 	"crypto/tls"
 	"crypto/x509/pkix"
 	"fmt"
@@ -37,7 +36,6 @@ import (
 	"github.com/gravitational/trace"
 
 	"github.com/gravitational/teleport"
-	"github.com/gravitational/teleport/api/client/proto"
 	"github.com/gravitational/teleport/api/constants"
 	"github.com/gravitational/teleport/api/types"
 	"github.com/gravitational/teleport/lib/client"
@@ -341,20 +339,6 @@ func onProxyCommandApp(cf *CLIConf) error {
 		alpnproxy.WithMiddleware(client.NewAppCertChecker(tc, routeToApp, nil)),
 	}
 
-	// If MFA is not required, try to load existing certs. If MFA is required,
-	// or loading an existing cert fails, let the cert checker reissue the
-	// certs on proxy startup.
-	required, err := isMFAAppAccessRequired(cf.Context, tc, routeToApp)
-	if err != nil {
-		return trace.Wrap(err)
-	}
-	if !required {
-		cert, _, err := loadAppCertificate(tc, routeToApp.Name)
-		if err == nil {
-			opts = append(opts, alpnproxy.WithClientCert(cert))
-		}
-	}
-
 	addr := "localhost:0"
 	if cf.LocalProxyPort != "" {
 		addr = fmt.Sprintf("127.0.0.1:%s", cf.LocalProxyPort)
@@ -385,28 +369,10 @@ func onProxyCommandApp(cf *CLIConf) error {
 
 	defer lp.Close()
 	if err = lp.Start(cf.Context); err != nil {
-		log.WithError(err).Errorf("Failed to start local proxy.")
+		return trace.Wrap(err)
 	}
 
 	return nil
-}
-
-func isMFAAppAccessRequired(ctx context.Context, tc *client.TeleportClient, app proto.RouteToApp) (bool, error) {
-	clusterClient, err := tc.ConnectToCluster(ctx)
-	if err != nil {
-		return false, trace.Wrap(err)
-	}
-	defer clusterClient.Close()
-
-	mfaResp, err := clusterClient.AuthClient.IsMFARequired(ctx, &proto.IsMFARequiredRequest{
-		Target: &proto.IsMFARequiredRequest_App{
-			App: &app,
-		},
-	})
-	if err != nil {
-		return false, trace.Wrap(err)
-	}
-	return mfaResp.GetRequired(), nil
 }
 
 // onProxyCommandAWS creates local proxes for AWS apps.
