@@ -23,82 +23,52 @@ import (
 
 	"github.com/gravitational/trace"
 
+	"github.com/gravitational/teleport/api/client/proto"
 	"github.com/gravitational/teleport/lib/client"
 	"github.com/gravitational/teleport/lib/tlsca"
 )
 
-func defaultValue[t any]() t {
-	var def t
-	return def
-}
-
-// pickCloudApp will attempt to find an active cloud app, automatically logging the user to the selected application if possible.
-func pickCloudApp[cloudApp any](cf *CLIConf, cloudFriendlyName string, matchRouteToApp func(tlsca.RouteToApp) bool, newCloudApp func(cf *CLIConf, profile *client.ProfileStatus, appRoute tlsca.RouteToApp) (cloudApp, error)) (cloudApp, error) {
-	app, needLogin, err := pickActiveCloudApp[cloudApp](cf, cloudFriendlyName, matchRouteToApp, newCloudApp)
-	if err != nil {
-		if !needLogin {
-			return defaultValue[cloudApp](), trace.Wrap(err)
-		}
-		log.WithError(err).Debugf("Failed to pick an active %v app, attempting to login into app %q", cloudFriendlyName, cf.AppName)
-		quiet := cf.Quiet
-		cf.Quiet = true
-		errLogin := onAppLogin(cf)
-		cf.Quiet = quiet
-		if errLogin != nil {
-			log.WithError(errLogin).Debugf("App login attempt failed")
-			// combine errors
-			return defaultValue[cloudApp](), trace.NewAggregate(err, errLogin)
-		}
-		// another attempt
-		app, _, err = pickActiveCloudApp[cloudApp](cf, cloudFriendlyName, matchRouteToApp, newCloudApp)
-		return app, trace.Wrap(err)
-	}
-	return app, nil
-}
-
-func pickActiveCloudApp[cloudApp any](cf *CLIConf, cloudFriendlyName string, matchRouteToApp func(tlsca.RouteToApp) bool, newCloudApp func(cf *CLIConf, profile *client.ProfileStatus, appRoute tlsca.RouteToApp) (cloudApp, error)) (cApp cloudApp, needLogin bool, err error) {
-	profile, err := cf.ProfileStatus()
-	if err != nil {
-		return defaultValue[cloudApp](), false, trace.Wrap(err)
-	}
-	if len(profile.Apps) == 0 {
-		if cf.AppName == "" {
-			return defaultValue[cloudApp](), false, trace.NotFound("please login to %v app using 'tsh apps login' first", cloudFriendlyName)
-		}
-		return defaultValue[cloudApp](), true, trace.NotFound("please login to %v app using 'tsh apps login %v' first", cloudFriendlyName, cf.AppName)
-	}
-	name := cf.AppName
-	if name != "" {
-		app, err := findApp(profile.Apps, name)
-		if err != nil {
-			if trace.IsNotFound(err) {
-				return defaultValue[cloudApp](), true, trace.NotFound("please login to %v app using 'tsh apps login %v' first", cloudFriendlyName, name)
+func pickCloudApp(tc *client.TeleportClient, profile *client.ProfileStatus, cf *CLIConf, cloudFriendlyName string, matchRouteToApp func(tlsca.RouteToApp) bool) (proto.RouteToApp, error) {
+	if cf.AppName != "" {
+		if app, err := findApp(profile.Apps, cf.AppName); err == nil {
+			if !matchRouteToApp(*app) {
+				return proto.RouteToApp{}, trace.BadParameter(
+					"selected app %q is not an %v application", cf.AppName, cloudFriendlyName,
+				)
 			}
-			return defaultValue[cloudApp](), false, trace.Wrap(err)
-		}
-		if !matchRouteToApp(*app) {
-			return defaultValue[cloudApp](), false, trace.BadParameter(
-				"selected app %q is not an %v application", name, cloudFriendlyName,
-			)
+			return tlscaRoutToAppToProto(*app), nil
+		} else if !trace.IsNotFound(err) {
+			return proto.RouteToApp{}, trace.Wrap(err)
 		}
 
-		cApp, err := newCloudApp(cf, profile, *app)
-		return cApp, false, trace.Wrap(err)
+		// If we don't find an active profile for the app, get details from the server.
+		app, err := getRegisteredApp(cf, tc)
+		if err != nil {
+			return proto.RouteToApp{}, trace.Wrap(err)
+		}
+
+		routeToApp, err := getRouteToApp(cf, tc, profile, app)
+		if err != nil {
+			return proto.RouteToApp{}, trace.Wrap(err)
+		}
+
+		return routeToApp, nil
 	}
 
+	// If a specific app was not requested, check for an active profile matching the type.
 	filteredApps := filterApps(matchRouteToApp, profile.Apps)
-	if len(filteredApps) == 0 {
-		// no app name to use for attempted login.
-		return defaultValue[cloudApp](), false, trace.NotFound("please login to %v App using 'tsh apps login' first", cloudFriendlyName)
-	}
-	if len(filteredApps) > 1 {
+	switch len(filteredApps) {
+	case 1:
+		// found 1 match, return it.
+		return tlscaRoutToAppToProto(filteredApps[0]), nil
+	case 0:
+		return proto.RouteToApp{}, trace.BadParameter("please specify an app using --app CLI argument")
+	default:
 		names := strings.Join(getAppNames(filteredApps), ", ")
-		return defaultValue[cloudApp](), false, trace.BadParameter(
+		return proto.RouteToApp{}, trace.BadParameter(
 			"multiple %v apps are available (%v), please specify one using --app CLI argument", cloudFriendlyName, names,
 		)
 	}
-	cApp, err = newCloudApp(cf, profile, filteredApps[0])
-	return cApp, false, trace.Wrap(err)
 }
 
 func filterApps(matchRouteToApp func(tlsca.RouteToApp) bool, apps []tlsca.RouteToApp) []tlsca.RouteToApp {

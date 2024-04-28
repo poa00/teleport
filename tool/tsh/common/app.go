@@ -19,17 +19,12 @@
 package common
 
 import (
-	"crypto"
-	"crypto/tls"
-	"crypto/x509/pkix"
 	"fmt"
 	"io"
-	"net"
 	"os"
 	"os/exec"
 	"strings"
 	"text/template"
-	"time"
 
 	"github.com/ghodss/yaml"
 	"github.com/gravitational/trace"
@@ -38,11 +33,9 @@ import (
 	"github.com/gravitational/teleport/api/client/proto"
 	"github.com/gravitational/teleport/api/mfa"
 	"github.com/gravitational/teleport/api/types"
-	"github.com/gravitational/teleport/api/utils/keys"
 	"github.com/gravitational/teleport/lib/asciitable"
 	"github.com/gravitational/teleport/lib/auth"
 	"github.com/gravitational/teleport/lib/client"
-	"github.com/gravitational/teleport/lib/defaults"
 	"github.com/gravitational/teleport/lib/tlsca"
 	"github.com/gravitational/teleport/lib/utils"
 )
@@ -143,6 +136,17 @@ func getRouteToApp(cf *CLIConf, tc *client.TeleportClient, profile *client.Profi
 		AzureIdentity:     azureIdentity,
 		GCPServiceAccount: gcpServiceAccount,
 	}, nil
+}
+
+func tlscaRoutToAppToProto(route tlsca.RouteToApp) proto.RouteToApp {
+	return proto.RouteToApp{
+		Name:              route.Name,
+		PublicAddr:        route.PublicAddr,
+		ClusterName:       route.ClusterName,
+		AWSRoleARN:        route.AWSRoleARN,
+		AzureIdentity:     route.AzureIdentity,
+		GCPServiceAccount: route.GCPServiceAccount,
+	}
 }
 
 func localProxyRequiredForApp(tc *client.TeleportClient) bool {
@@ -540,120 +544,6 @@ func removeAppLocalFiles(profile *client.ProfileStatus, appName string) {
 	if err != nil {
 		log.WithError(err).Warnf("Failed to remove %v", profile.AppLocalCAPath(appName))
 	}
-}
-
-// loadAppSelfSignedCA loads self-signed CA for provided app, or tries to
-// generate a new CA if first load fails.
-func loadAppSelfSignedCA(tc *client.TeleportClient, appName string) (tls.Certificate, error) {
-	appCerts, _, err := loadAppCertificate(tc, appName)
-	if err != nil {
-		return tls.Certificate{}, trace.Wrap(err)
-	}
-	appCertsExpireAt, err := getTLSCertExpireTime(appCerts)
-	if err != nil {
-		return tls.Certificate{}, trace.Wrap(err)
-	}
-
-	profile, err := tc.ProfileStatus()
-	if err != nil {
-		return tls.Certificate{}, trace.Wrap(err)
-	}
-
-	cert, err := loadSelfSignedCA(profile.AppLocalCAPath(appName), profile.KeyPath(), appCertsExpireAt, "localhost")
-	return cert, trace.Wrap(err)
-}
-
-func loadSelfSignedCA(caPath, keyPath string, validUntil time.Time, dnsNames ...string) (tls.Certificate, error) {
-	caTLSCert, err := keys.LoadX509KeyPair(caPath, keyPath)
-	if err == nil {
-		if expire, err := getTLSCertExpireTime(caTLSCert); err == nil && validUntil.Before(expire) {
-			return caTLSCert, nil
-		}
-	}
-	if err != nil && !trace.IsNotFound(err) {
-		log.WithError(err).Debugf("Failed to load certificate from %v.", caPath)
-	}
-
-	// Generate new ca cert.
-	caCert, err := generateSelfSignedCA(caPath, keyPath, validUntil, dnsNames...)
-	return caCert, trace.Wrap(err)
-}
-
-// generateSelfSignedCA generates a new self-signed CA for provided dnsNames
-// and saves/overwrites the local CA file in the profile directory.
-func generateSelfSignedCA(caPath, keyPath string, validUntil time.Time, dnsNames ...string) (tls.Certificate, error) {
-	log.Debugf("Generating local self signed CA at %v", caPath)
-	keyPem, err := utils.ReadPath(keyPath)
-	if err != nil {
-		return tls.Certificate{}, trace.Wrap(err)
-	}
-
-	key, err := keys.ParsePrivateKey(keyPem)
-	if err != nil {
-		return tls.Certificate{}, trace.Wrap(err)
-	}
-
-	certPem, err := tlsca.GenerateSelfSignedCAWithConfig(tlsca.GenerateCAConfig{
-		Entity: pkix.Name{
-			CommonName:   "localhost",
-			Organization: []string{"Teleport"},
-		},
-		Signer:      key,
-		DNSNames:    dnsNames,
-		IPAddresses: []net.IP{net.ParseIP(defaults.Localhost)},
-		TTL:         time.Until(validUntil),
-	})
-	if err != nil {
-		return tls.Certificate{}, trace.Wrap(err)
-	}
-
-	if _, err := utils.EnsureLocalPath(caPath, "", ""); err != nil {
-		return tls.Certificate{}, trace.Wrap(err)
-	}
-
-	// WriteFile truncates existing file before writing.
-	if err = os.WriteFile(caPath, certPem, 0o600); err != nil {
-		return tls.Certificate{}, trace.ConvertSystemError(err)
-	}
-
-	caCert, err := tls.X509KeyPair(certPem, keyPem)
-	return caCert, trace.Wrap(err)
-}
-
-// generateSelfSignedCA generates a new self-signed CA for provided dnsNames
-// and saves/overwrites the local CA file in the profile directory.
-func generateSelfSignedCAFromCert(cert tls.Certificate, dnsNames ...string) (tls.Certificate, error) {
-	certExpiry, err := getTLSCertExpireTime(cert)
-	if err != nil {
-		return tls.Certificate{}, trace.Wrap(err)
-	}
-
-	signer, ok := cert.PrivateKey.(crypto.Signer)
-	if !ok {
-		return tls.Certificate{}, trace.BadParameter("private key type %T does not implement crypto.Signer", cert.PrivateKey)
-	}
-
-	certPem, err := tlsca.GenerateSelfSignedCAWithConfig(tlsca.GenerateCAConfig{
-		Entity: pkix.Name{
-			CommonName:   "localhost",
-			Organization: []string{"Teleport"},
-		},
-		Signer:      signer,
-		DNSNames:    dnsNames,
-		IPAddresses: []net.IP{net.ParseIP(defaults.Localhost)},
-		TTL:         time.Until(certExpiry),
-	})
-	if err != nil {
-		return tls.Certificate{}, trace.Wrap(err)
-	}
-
-	keyPem, err := keys.MarshalPrivateKey(signer)
-	if err != nil {
-		return tls.Certificate{}, trace.Wrap(err)
-	}
-
-	caCert, err := tls.X509KeyPair(certPem, keyPem)
-	return caCert, trace.Wrap(err)
 }
 
 const (
