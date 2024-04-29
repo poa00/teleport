@@ -33,6 +33,7 @@ import (
 
 	"github.com/gravitational/teleport/lib/client"
 	"github.com/gravitational/teleport/lib/teleterm/apiserver"
+	"github.com/gravitational/teleport/lib/teleterm/clusteridcache"
 	"github.com/gravitational/teleport/lib/teleterm/clusters"
 	"github.com/gravitational/teleport/lib/teleterm/daemon"
 )
@@ -56,12 +57,15 @@ func Serve(ctx context.Context, cfg Config) error {
 		return trace.Wrap(err)
 	}
 
+	clusterIDCache := &clusteridcache.Cache{}
+
 	daemonService, err := daemon.New(daemon.Config{
 		Storage:                         storage,
 		CreateTshdEventsClientCredsFunc: grpcCredentials.tshdEvents,
 		PrehogAddr:                      cfg.PrehogAddr,
 		KubeconfigsDir:                  cfg.KubeconfigsDir,
 		AgentsDir:                       cfg.AgentsDir,
+		ClusterIDCache:                  clusterIDCache,
 	})
 	if err != nil {
 		return trace.Wrap(err)
@@ -73,6 +77,7 @@ func Serve(ctx context.Context, cfg Config) error {
 		TshdServerCreds: grpcCredentials.tshd,
 		ListeningC:      cfg.ListeningC,
 		ClientStore:     client.NewFSClientStore(cfg.HomeDir),
+		ClusterIDCache:  clusterIDCache,
 	})
 	if err != nil {
 		return trace.Wrap(err)
