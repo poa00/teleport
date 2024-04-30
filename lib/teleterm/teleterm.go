@@ -78,6 +78,7 @@ func Serve(ctx context.Context, cfg Config) error {
 		ListeningC:      cfg.ListeningC,
 		ClientStore:     client.NewFSClientStore(cfg.HomeDir),
 		ClusterIDCache:  clusterIDCache,
+		InstallationID:  cfg.InstallationID,
 	})
 	if err != nil {
 		return trace.Wrap(err)

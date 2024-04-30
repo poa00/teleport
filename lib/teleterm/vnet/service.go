@@ -77,6 +77,8 @@ func New(cfg Config) (*Service, error) {
 type Config struct {
 	DaemonService *daemon.Service
 	ClientStore   *client.Store
+	// InstallationID used for event reporting.
+	InstallationID string
 }
 
 // CheckAndSetDefaults checks and sets the defaults
@@ -87,6 +89,10 @@ func (c *Config) CheckAndSetDefaults() error {
 
 	if c.ClientStore == nil {
 		return trace.BadParameter("missing ClientStore")
+	}
+
+	if c.InstallationID == "" {
+		return trace.BadParameter("missing InstallationID")
 	}
 
 	return nil
