@@ -47,6 +47,7 @@ import { SearchResource } from 'teleport/Discover/SelectResource';
 import { encodeUrlQueryParams } from 'teleport/components/hooks/useUrlFiltering';
 import Empty, { EmptyStateInfo } from 'teleport/components/Empty';
 import { FeatureFlags } from 'teleport/types';
+import { UnifiedResource } from 'teleport/services/agents';
 
 import { ResourceActionButton } from './ResourceActionButton';
 import SearchPanel from './SearchPanel';
@@ -90,13 +91,19 @@ const getAvailableKindsWithAccess = (flags: FeatureFlags): FilterKind[] => {
   ];
 };
 
+type Props = {
+  clusterId: string;
+  isLeafCluster: boolean;
+  getActionButton?: (resource: UnifiedResource) => JSX.Element;
+  includeRequestable?: boolean;
+};
+
 export function ClusterResources({
   clusterId,
   isLeafCluster,
-}: {
-  clusterId: string;
-  isLeafCluster: boolean;
-}) {
+  getActionButton,
+  includeRequestable,
+}: Props) {
   const teleCtx = useTeleport();
   const flags = teleCtx.getFeatureFlags();
 
@@ -147,9 +154,10 @@ export function ClusterResources({
             pinnedOnly: params.pinnedOnly,
             sort: params.sort,
             kinds: params.kinds,
-            searchAsRoles: '',
+            searchAsRoles: includeRequestable ? 'yes' : '',
             limit: paginationParams.limit,
             startKey: paginationParams.startKey,
+            includeRequestable,
           },
           signal
         );
@@ -222,7 +230,9 @@ export function ClusterResources({
         resources={resources.map(resource => ({
           resource,
           ui: {
-            ActionButton: <ResourceActionButton resource={resource} />,
+            ActionButton: getActionButton?.(resource) || (
+              <ResourceActionButton resource={resource} />
+            ),
           },
         }))}
         setParams={newParams => {
