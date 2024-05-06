@@ -60,6 +60,7 @@ export function ResourceCard({
   pinned,
   pinResource,
   selectResource,
+  requiresRequest,
   selected,
 }: Omit<ResourceItemProps, 'listViewProps' | 'expandAllLabels'>) {
   const { primaryDesc, secondaryDesc } = cardViewProps;
@@ -167,6 +168,7 @@ export function ResourceCard({
           alignItems="start"
           onMouseLeave={onMouseLeave}
           pinned={pinned}
+          requiresRequest={requiresRequest}
           selected={selected}
         >
           <HoverTooltip tipContent={selected ? 'Deselect' : 'Select'}>
@@ -340,11 +342,17 @@ const CardInnerContainer = styled(Flex)`
 `;
 
 const getBackgroundColor = props => {
+  if (props.requiresRequest && props.pinned) {
+    return props.theme.colors.interactive.tonal.primary[0];
+  }
+  if (props.requiresRequest) {
+    return props.theme.colors.spotBackground[0];
+  }
   if (props.selected) {
     return props.theme.colors.interactive.tonal.primary[2];
   }
   if (props.pinned) {
-    return props.theme.colors.interactive.tonal.primary[0];
+    return props.theme.colors.interactive.tonal.primary[1];
   }
   return 'transparent';
 };

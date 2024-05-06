@@ -2678,9 +2678,12 @@ func makeUnifiedResourceRequest(r *http.Request) (*proto.ListUnifiedResourcesReq
 		PinnedOnly:          values.Get("pinnedOnly") == "true",
 		PredicateExpression: values.Get("query"),
 		SearchKeywords:      client.ParseSearchKeywords(values.Get("search"), ' '),
-		UseSearchAsRoles:    values.Get("searchAsRoles") == "yes",
-		IncludeLogins:       true,
-		IncludeRequestable:  values.Get("includeRequestable") == "true",
+		// includeRequestable requires a searchAsRoles request, but we set it here instead of the frontend
+		// to protect the frontend from accidentally requesting a "SearchAsRoles" request to older proxy versions
+		// and then returning a bunch of resources that won't include "Requires Request" flags.
+		UseSearchAsRoles:   values.Get("searchAsRoles") == "yes" || values.Get("includeRequestable") == "true",
+		IncludeLogins:      true,
+		IncludeRequestable: values.Get("includeRequestable") == "true",
 	}, nil
 }
 

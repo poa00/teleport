@@ -46,6 +46,7 @@ export function ResourceListItem({
   selectResource,
   selected,
   expandAllLabels,
+  requiresRequest = false,
 }: Omit<ResourceItemProps, 'cardViewProps'>) {
   const { description, resourceType, addr } = listViewProps;
 
@@ -78,7 +79,12 @@ export function ResourceListItem({
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <RowInnerContainer alignItems="start" pinned={pinned} selected={selected}>
+      <RowInnerContainer
+        requiresRequest={requiresRequest}
+        alignItems="start"
+        pinned={pinned}
+        selected={selected}
+      >
         {/* checkbox */}
         <HoverTooltip
           css={`
@@ -311,11 +317,17 @@ const RowInnerContainer = styled(Flex)`
 `;
 
 const getBackgroundColor = props => {
+  if (props.requiresRequest && props.pinned) {
+    return props.theme.colors.interactive.tonal.primary[0];
+  }
+  if (props.requiresRequest) {
+    return props.theme.colors.spotBackground[0];
+  }
   if (props.selected) {
     return props.theme.colors.interactive.tonal.primary[2];
   }
   if (props.pinned) {
-    return props.theme.colors.interactive.tonal.primary[0];
+    return props.theme.colors.interactive.tonal.primary[1];
   }
   return 'transparent';
 };
