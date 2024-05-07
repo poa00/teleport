@@ -67,6 +67,10 @@ import {
 } from './ActionButtons';
 import { useResourcesContext, ResourcesContext } from './resourcesContext';
 import { useUserPreferences } from './useUserPreferences';
+import { RequestButton } from 'e-teleport/Workflow/NewRequest/RequestButton';
+import useNewRequest from '../DocumentAccessRequests/NewRequest/useNewRequest';
+import { getResourceId } from 'e-teleport/Workflow/NewRequest/useNewRequest';
+// import { RequestButton } from 'e-teleport/Workflow/NewRequest/RequestButton';
 
 export function UnifiedResources(props: {
   clusterUri: uri.ClusterUri;
@@ -74,6 +78,7 @@ export function UnifiedResources(props: {
   queryParams: DocumentClusterQueryParams;
 }) {
   const { clustersService } = useAppContext();
+  const { addOrRemoveResource, addedResources } = useNewRequest();
   const { userPreferencesAttempt, updateUserPreferences, userPreferences } =
     useUserPreferences(props.clusterUri);
   const { documentsService, rootClusterUri } = useWorkspaceContext();
@@ -137,8 +142,41 @@ export function UnifiedResources(props: {
     [documentsService, props.docUri]
   );
 
+  const showCheckout = true;
+
+  const getActionButton = ({ resource, ui }: SharedUnifiedResource) => {
+    const disabled = false;
+    const isAgentAdded = Boolean(
+      addedResources[resource.kind][getResourceId(resource)]
+    );
+    // if we are currently making an access request, all buttons change to
+    // add to request
+    const showRequestButton = resource.requiresRequest || showCheckout;
+    const requestButtonText = showCheckout
+      ? '+ Add to Request'
+      : '+ Request Access';
+
+    if (showRequestButton || showCheckout) {
+      return (
+        <RequestButton
+          isAgentAdded={isAgentAdded}
+          addText={requestButtonText}
+          onClick={() =>
+            addOrRemoveResource(resource.kind, getResourceId(resource))
+          }
+          disabled={disabled}
+        />
+      );
+    }
+
+    return ui.ActionButton;
+  };
+
   return (
     <Resources
+      getActionButton={getActionButton}
+      includeRequestable={true}
+      showCheckout={true}
       queryParams={mergedParams}
       onParamsChange={onParamsChange}
       clusterUri={props.clusterUri}
@@ -170,6 +208,9 @@ const Resources = memo(
     openConnectMyComputerDocument(): void;
     onResourcesRefreshRequest: ResourcesContext['onResourcesRefreshRequest'];
     discoverUrl: string;
+    getActionButton?: (resource: SharedUnifiedResource) => JSX.Element;
+    includeRequestable?: boolean;
+    showCheckout?: boolean;
   }) => {
     const appContext = useAppContext();
 
@@ -257,7 +298,12 @@ const Resources = memo(
           props.updateUserPreferences({ unifiedResourcePreferences })
         }
         pinning={pinning}
-        resources={resources.map(mapToSharedResource)}
+        resources={resources.map(mapToSharedResource).map(resource => ({
+          resource: resource.resource,
+          ui: props.getActionButton
+            ? { ActionButton: props.getActionButton(resource) }
+            : resource.ui,
+        }))}
         resourcesFetchAttempt={attempt}
         fetchResources={fetch}
         availableKinds={[

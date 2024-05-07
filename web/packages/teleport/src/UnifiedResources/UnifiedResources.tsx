@@ -27,6 +27,7 @@ import {
   useUnifiedResourcesFetch,
   UnifiedResourcesPinning,
   BulkAction,
+  SharedUnifiedResource,
 } from 'shared/components/UnifiedResources';
 import { ClusterDropdown } from 'shared/components/ClusterDropdown/ClusterDropdown';
 
@@ -48,7 +49,6 @@ import { SearchResource } from 'teleport/Discover/SelectResource';
 import { encodeUrlQueryParams } from 'teleport/components/hooks/useUrlFiltering';
 import Empty, { EmptyStateInfo } from 'teleport/components/Empty';
 import { FeatureFlags } from 'teleport/types';
-import { UnifiedResource } from 'teleport/services/agents';
 
 import { ResourceActionButton } from './ResourceActionButton';
 import SearchPanel from './SearchPanel';
@@ -95,7 +95,9 @@ const getAvailableKindsWithAccess = (flags: FeatureFlags): FilterKind[] => {
 type Props = {
   clusterId: string;
   isLeafCluster: boolean;
-  getActionButton?: (resource: UnifiedResource) => JSX.Element;
+  getActionButton?: (
+    resource: SharedUnifiedResource['resource']
+  ) => JSX.Element;
   includeRequestable?: boolean;
   showCheckout?: boolean;
   /** A list of actions that can be performed on the selected items. */
