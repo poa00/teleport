@@ -70,6 +70,7 @@ import { useUserPreferences } from './useUserPreferences';
 import { RequestButton } from 'e-teleport/Workflow/NewRequest/RequestButton';
 import useNewRequest from '../DocumentAccessRequests/NewRequest/useNewRequest';
 import { getResourceId } from 'e-teleport/Workflow/NewRequest/useNewRequest';
+
 // import { RequestButton } from 'e-teleport/Workflow/NewRequest/RequestButton';
 
 export function UnifiedResources(props: {
@@ -81,7 +82,8 @@ export function UnifiedResources(props: {
   const { addOrRemoveResource, addedResources } = useNewRequest();
   const { userPreferencesAttempt, updateUserPreferences, userPreferences } =
     useUserPreferences(props.clusterUri);
-  const { documentsService, rootClusterUri } = useWorkspaceContext();
+  const { documentsService, rootClusterUri, accessRequestsService } =
+    useWorkspaceContext();
   const { onResourcesRefreshRequest } = useResourcesContext();
   const loggedInUser = useWorkspaceLoggedInUser();
 
@@ -142,7 +144,7 @@ export function UnifiedResources(props: {
     [documentsService, props.docUri]
   );
 
-  const showCheckout = true;
+  const showCheckout = accessRequestsService.getAddedResourceCount() > 0;
 
   const getActionButton = ({ resource, ui }: SharedUnifiedResource) => {
     const disabled = false;
@@ -224,7 +226,7 @@ const Resources = memo(
               appContext.resourcesService.listUnifiedResources(
                 {
                   clusterUri: props.clusterUri,
-                  searchAsRoles: false,
+                  searchAsRoles: true,
                   sortBy: {
                     isDesc: props.queryParams.sort.dir === 'DESC',
                     field: props.queryParams.sort.fieldName,
@@ -235,6 +237,7 @@ const Resources = memo(
                   pinnedOnly: props.queryParams.pinnedOnly,
                   startKey: paginationParams.startKey,
                   limit: paginationParams.limit,
+                  includeRequestable: true,
                 },
                 signal
               )
@@ -352,6 +355,7 @@ const mapToSharedResource = (
           addr: server.addr,
           tunnel: server.tunnel,
           subKind: server.subKind as NodeSubKind,
+          requiresRequest: resource.requiresRequest,
         },
         ui: {
           ActionButton: <ConnectServerActionButton server={server} />,
@@ -371,6 +375,7 @@ const mapToSharedResource = (
             database.protocol as DbProtocol
           ).title,
           protocol: database.protocol as DbProtocol,
+          requiresRequest: resource.requiresRequest,
         },
         ui: {
           ActionButton: <ConnectDatabaseActionButton database={database} />,
@@ -385,6 +390,7 @@ const mapToSharedResource = (
           kind: 'kube_cluster' as const,
           labels: kube.labels,
           name: kube.name,
+          requiresRequest: resource.requiresRequest,
         },
         ui: {
           ActionButton: <ConnectKubeActionButton kube={kube} />,
@@ -405,6 +411,7 @@ const mapToSharedResource = (
           description: app.desc,
           friendlyName: app.friendlyName,
           samlApp: app.samlApp,
+          requiresRequest: resource.requiresRequest,
         },
         ui: {
           ActionButton: <ConnectAppActionButton app={app} />,

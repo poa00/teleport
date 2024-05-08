@@ -187,6 +187,7 @@ export class ResourcesService {
             return {
               kind: 'server' as const,
               resource: p.resource.server,
+              requiresRequest: p.requiresRequest,
             };
           }
 
@@ -194,6 +195,7 @@ export class ResourcesService {
             return {
               kind: 'database' as const,
               resource: p.resource.database,
+              requiresRequest: p.requiresRequest,
             };
           }
 
@@ -201,6 +203,7 @@ export class ResourcesService {
             return {
               kind: 'app' as const,
               resource: p.resource.app,
+              requiresRequest: p.requiresRequest,
             };
           }
 
@@ -208,6 +211,7 @@ export class ResourcesService {
             return {
               kind: 'kube' as const,
               resource: p.resource.kube,
+              requiresRequest: p.requiresRequest,
             };
           }
 
@@ -304,11 +308,12 @@ function makeGetResourcesParamsRequest(params: types.GetResourcesParams) {
   };
 }
 
-export type UnifiedResourceResponse =
+export type UnifiedResourceResponse = (
   | { kind: 'server'; resource: types.Server }
   | {
       kind: 'database';
       resource: types.Database;
     }
   | { kind: 'kube'; resource: types.Kube }
-  | { kind: 'app'; resource: types.App };
+  | { kind: 'app'; resource: types.App }
+) & { requiresRequest: boolean };
