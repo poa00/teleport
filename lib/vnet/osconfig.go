@@ -21,6 +21,7 @@ import (
 	"log/slog"
 	"net"
 	"os"
+	"strings"
 
 	"github.com/gravitational/trace"
 
@@ -104,6 +105,12 @@ func (c *osConfigurator) updateOSConfiguration(ctx context.Context) error {
 		// profileName is the web proxy address, add the default DNS zone for it.
 		// TODO(nklaassen): add the custom DNS zones as well, after the rest of VNet supports it.
 		dnsZones = append(dnsZones, profileName)
+		for _, zone := range vnetConfig.GetSpec().GetCustomDnsZones() {
+			suffix := zone.GetSuffix()
+			// Trim any leading or trailing "." to match expected format.
+			zone := strings.TrimPrefix(strings.TrimSuffix(suffix, "."), ".")
+			dnsZones = append(dnsZones, zone)
+		}
 
 		cidrRange := vnetConfig.GetSpec().GetIpv4CidrRange()
 		if cidrRange == "" {
