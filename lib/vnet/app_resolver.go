@@ -56,6 +56,14 @@ type AppProvider interface {
 
 	// GetDialOptions returns ALPN dial options for the profile.
 	GetDialOptions(ctx context.Context, profileName string) (*DialOptions, error)
+
+	// OnNewConnection gets called whenever a new connection is about to be established through VNet.
+	// By the time OnNewConnection, VNet has already verified that the user holds a valid cert for the
+	// app.
+	//
+	// The connection won't be established until OnNewConnection returns. Returning an error prevents
+	// the connection from being made.
+	OnNewConnection(ctx context.Context, profileName, leafClusterName string, app types.Application) error
 }
 
 // DialOptions holds ALPN dial options for dialing apps.
@@ -185,7 +193,14 @@ func newTCPAppHandler(
 		leafClusterName: leafClusterName,
 		app:             app,
 	}
-	middleware := client.NewCertChecker(appCertIssuer, nil /*clock*/)
+	certChecker := client.NewCertChecker(appCertIssuer, nil /*clock*/)
+	middleware := &localProxyMiddleware{
+		certChecker:     certChecker,
+		appProvider:     appProvider,
+		app:             app,
+		profileName:     profileName,
+		leafClusterName: leafClusterName,
+	}
 
 	localProxyConfig := alpnproxy.LocalProxyConfig{
 		RemoteProxyAddr:         dialOpts.WebProxyAddr,
@@ -248,4 +263,27 @@ func fullyQualify(domain string) string {
 		return domain
 	}
 	return domain + "."
+}
+
+// localProxyMiddleware wraps around [client.CertChecker] and additionally makes it so that its
+// OnNewConnection method calls the same method of [AppProvider].
+type localProxyMiddleware struct {
+	app             types.Application
+	profileName     string
+	leafClusterName string
+	certChecker     *client.CertChecker
+	appProvider     AppProvider
+}
+
+func (m *localProxyMiddleware) OnNewConnection(ctx context.Context, lp *alpnproxy.LocalProxy) error {
+	err := m.certChecker.OnNewConnection(ctx, lp)
+	if err != nil {
+		return trace.Wrap(err)
+	}
+
+	return trace.Wrap(m.appProvider.OnNewConnection(ctx, m.profileName, m.leafClusterName, m.app))
+}
+
+func (m *localProxyMiddleware) OnStart(ctx context.Context, lp *alpnproxy.LocalProxy) error {
+	return trace.Wrap(m.certChecker.OnStart(ctx, lp))
 }

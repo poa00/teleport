@@ -28,6 +28,7 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -221,10 +222,11 @@ func (n noUpstreamNameservers) UpstreamNameservers(ctx context.Context) ([]strin
 }
 
 type echoAppProvider struct {
-	profiles   []string
-	clients    map[string]map[string]*client.ClusterClient
-	dialOpts   DialOptions
-	clientCert tls.Certificate
+	profiles                 []string
+	clients                  map[string]map[string]*client.ClusterClient
+	dialOpts                 DialOptions
+	clientCert               tls.Certificate
+	onNewConnectionCallCount atomic.Uint32
 }
 
 // newEchoAppProvider returns an app provider with the list of named apps in each profile and leaf cluster.
@@ -275,6 +277,12 @@ func (p *echoAppProvider) ReissueAppCert(ctx context.Context, profileName, leafC
 
 func (p *echoAppProvider) GetDialOptions(ctx context.Context, profileName string) (*DialOptions, error) {
 	return &p.dialOpts, nil
+}
+
+func (p *echoAppProvider) OnNewConnection(ctx context.Context, profileName, leafClusterName string, app types.Application) error {
+	p.onNewConnectionCallCount.Add(1)
+
+	return nil
 }
 
 // echoAppAuthClient is a fake auth client that answers GetResources requests with a static list of apps and
@@ -426,10 +434,83 @@ func TestDialFakeApp(t *testing.T) {
 				ctx, cancel := context.WithTimeout(ctx, 200*time.Millisecond)
 				defer cancel()
 				_, err := p.lookupHost(ctx, app)
-				require.Error(t, err, "asdf")
+				require.Error(t, err, "Expected lookup of an invalid app to fail")
 			})
 		}
 	})
+}
+
+func TestOnNewConnection(t *testing.T) {
+	t.Parallel()
+	ctx, cancel := context.WithCancel(context.Background())
+	t.Cleanup(cancel)
+
+	cert, err := tls.X509KeyPair([]byte(fixtures.TLSCACertPEM), []byte(fixtures.TLSCAKeyPEM))
+	require.NoError(t, err)
+
+	tlsConfig := &tls.Config{
+		Certificates: []tls.Certificate{cert},
+	}
+
+	listener, err := tls.Listen("tcp", "127.0.0.1:0", tlsConfig)
+	require.NoError(t, err)
+
+	// Run a fake web proxy that will accept any client connection and echo the input back.
+	utils.RunTestBackgroundTask(ctx, t, &utils.TestBackgroundTask{
+		Name: "web proxy",
+		Task: func(ctx context.Context) error {
+			for {
+				conn, err := listener.Accept()
+				if err != nil {
+					if utils.IsOKNetworkError(err) {
+						return nil
+					}
+					return trace.Wrap(err)
+				}
+				go utils.ProxyConn(ctx, conn, conn)
+			}
+		},
+		Terminate: func() error {
+			if err := listener.Close(); !utils.IsOKNetworkError(err) {
+				return trace.Wrap(err)
+			}
+			return nil
+		},
+	})
+
+	roots := x509.NewCertPool()
+	roots.AppendCertsFromPEM([]byte(fixtures.TLSCAKeyPEM))
+
+	dialOpts := DialOptions{
+		WebProxyAddr:          listener.Addr().String(),
+		RootClusterCACertPool: roots,
+		InsecureSkipVerify:    true,
+	}
+
+	appProvider := newEchoAppProvider(map[string]map[string][]string{
+		"root1.example.com": map[string][]string{
+			"": {"echo1"},
+		},
+	}, dialOpts, cert)
+
+	validAppName := "echo1.root1.example.com"
+	invalidAppName := "not.an.app.example.com."
+
+	p := newTestPack(t, ctx, appProvider)
+
+	// Attempt to establish a connection to an invalid app and verify that OnNewConnection was not
+	// called.
+	lookupCtx, lookupCtxCancel := context.WithTimeout(ctx, 200*time.Millisecond)
+	defer lookupCtxCancel()
+	_, err = p.lookupHost(lookupCtx, invalidAppName)
+	require.Error(t, err, "Expected lookup of an invalid app to fail")
+	require.Equal(t, uint32(0), appProvider.onNewConnectionCallCount.Load())
+
+	// Establish a connection to a valid app and verify that OnNewConnection was called.
+	conn, err := p.dialHost(ctx, validAppName)
+	require.NoError(t, err)
+	t.Cleanup(func() { require.NoError(t, conn.Close()) })
+	require.Equal(t, uint32(1), appProvider.onNewConnectionCallCount.Load())
 }
 
 func randomULAAddress() (tcpip.Address, error) {

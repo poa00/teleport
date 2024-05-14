@@ -112,6 +112,12 @@ func (p *vnetAppProvider) GetDialOptions(ctx context.Context, profileName string
 	return dialOpts, nil
 }
 
+// OnNewConnection gets called before each VNet connection. It's a noop as tsh doesn't need to do
+// anything extra here.
+func (p *vnetAppProvider) OnNewConnection(ctx context.Context, profileName, leafClusterName string, app types.Application) error {
+	return nil
+}
+
 // getRootClusterCACertPool returns a certificate pool for the root cluster of the given profile.
 func (p *vnetAppProvider) getRootClusterCACertPool(ctx context.Context, profileName string) (*x509.CertPool, error) {
 	tc, err := p.newTeleportClient(ctx, profileName, "")
