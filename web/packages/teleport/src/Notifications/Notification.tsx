@@ -41,6 +41,7 @@ import {
   Notification as NotificationType,
   NotificationState,
 } from 'teleport/services/notifications';
+import history from 'teleport/services/history';
 
 import useStickyClusterId from 'teleport/useStickyClusterId';
 
@@ -121,9 +122,11 @@ export function Notification({
     if (e.currentTarget.contains(e.target as HTMLElement)) {
       if (content.kind === 'text') {
         setShowTextContentDialog(true);
+        markAsClicked();
         return;
       }
-      // TODO rudream - add notification redirect functionality
+      markAsClicked();
+      history.push(content.redirectRoute);
     }
   }
 
@@ -152,18 +155,8 @@ export function Notification({
         <ContentContainer>
           <ContentBody>
             <Text>{content.title}</Text>
-            {content.kind === 'redirect' && content.quickAction && (
-              <ButtonSecondary
-                css={`
-                  text-transform: none;
-                `}
-                onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
-                  event.stopPropagation();
-                  content.quickAction.onClick();
-                }}
-              >
-                {content.quickAction.buttonText}
-              </ButtonSecondary>
+            {content.kind === 'redirect' && content.QuickAction && (
+              <content.QuickAction markAsClicked={markAsClicked} />
             )}
             {hideNotificationAttempt.status === 'error' && (
               <Text typography="subtitle3" color="error.main">
