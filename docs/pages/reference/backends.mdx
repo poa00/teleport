@@ -391,6 +391,81 @@ credentials, or [managed
 identity](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview)
 credentials.
 
+### Google Cloud IAM authentication
+
+If you are using Cloud SQL for PostgreSQL or AlloyDB for PostgreSQL, Teleport
+can make use of IAM authentication to connect to the PostgreSQL server without
+having to manage any secrets:
+
+<Tabs>
+<TabItem label="Cloud SQL">
+To enable IAM authentication and logical replication, make sure flag
+`cloudsql.iam_authentication` and flag `cloudsql.logical_decoding` and are set
+to `on` for the Cloud SQL instance.
+
+Cloud SQL maps service accounts as database usernames when using [IAM
+authentication](https://cloud.google.com/sql/docs/mysql/iam-authentication).
+Specify the database username mapped to the service account and the IP of the
+Cloud SQL instance in the connection string:
+```yaml
+teleport:
+  storage:
+    type: postgresql
+    auth_mode: gcp-sql
+
+    conn_string: postgresql://<Var name="service-account@project-id.iam"/>@<Var name="server ip"/>/teleport_backend?sslmode=verify-ca&sslrootcert=<Var name="/path/to/server-ca"/>
+
+    audit_events_uri:
+      - postgresql://<Var name="service-account@project-id.iam"/>@<Var name="server ip"/>/teleport_backend?sslmode=verify-ca&sslrootcert=<Var name="/path/to/server-ca">#auth_mode=gcp-sql
+```
+
+For Teleport to verify the Cloud SQL instance, download the server CA
+certificates following [Google Cloud
+documentation](https://cloud.google.com/sql/docs/mysql/configure-ssl-instance#server-certs)
+and specify it for `sslrootcert` in the connection string. If the Cloud SQL
+instance's server CA cannot be obtained, use `sslmode=require` instead.
+
+If the Cloud SQL instance requires client certificates, download the client key
+and certificate, then append `sslcert=client-cert.pem&sslkey=client-key.pem` to
+the connection string.
+</TabItem>
+
+<TabItem label="AlloyDB">
+To enable IAM authentication and logical replication, make sure flag
+`alloydb.iam_authentication` and flag `alloydb.logical_decoding` are set to
+`on` for the AlloyDB instance.
+
+AlloyDB maps service accounts as database usernames when using [IAM
+authentication](https://cloud.google.com/alloydb/docs/manage-iam-authn).
+Specify the database username mapped to the service account and the IP of the
+Cloud SQL instance in the connection string:
+```yaml
+teleport:
+  storage:
+    type: postgresql
+    auth_mode: gcp-alloydb
+
+    conn_string: postgresql://<Var name="service-account@project-id.iam"/>@<Var name="server ip"/>/teleport_backend?sslmode=require
+
+    audit_events_uri:
+      - postgresql://<Var name="service-account@project-id.iam"/>@<Var name="server ip"/>/teleport_backend?sslmode=require#auth_mode=gcp-alloydb
+```
+</TabItem>
+</Tabs>
+
+Teleport will make use of the credentials specified through
+[GOOGLE_APPLICATION_CREDENTIALS environment
+variable](https://cloud.google.com/docs/authentication/application-default-credentials#GAC),
+[Workload Identity
+Federation](https://cloud.google.com/iam/docs/workload-identity-federation)
+with service account impersonation, or service account credentials attached to
+VMs.
+
+If the service account used in the connection string is different from the
+service account of the default credentials, Teleport will impersonate the
+service account used in the connection string as a service account token
+creator using the default credentials.
+
 ### Development
 
 If you are not ready to connect Teleport to a production instance of
