@@ -37,6 +37,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Request for Relogin.
 type ReloginRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -173,6 +174,7 @@ func (x *GatewayCertExpired) GetTargetUri() string {
 	return ""
 }
 
+// Response for Relogin.
 type ReloginResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -211,6 +213,11 @@ func (*ReloginResponse) Descriptor() ([]byte, []int) {
 	return file_teleport_lib_teleterm_v1_tshd_events_service_proto_rawDescGZIP(), []int{2}
 }
 
+// SendNotificationRequest includes details behind a notification.
+//
+// Rather than including arbitrary text strings, SendNotificationRequest should contain minimal
+// details. The Electron app can then consume and format them as needed, without having to change
+// what is sent over the wire.
 type SendNotificationRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -345,6 +352,7 @@ func (x *CannotProxyGatewayConnection) GetError() string {
 	return ""
 }
 
+// Response for SendNotification.
 type SendNotificationResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -383,6 +391,7 @@ func (*SendNotificationResponse) Descriptor() ([]byte, []int) {
 	return file_teleport_lib_teleterm_v1_tshd_events_service_proto_rawDescGZIP(), []int{5}
 }
 
+// Request for SendPendingHeadlessAuthentication.
 type SendPendingHeadlessAuthenticationRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -446,6 +455,7 @@ func (x *SendPendingHeadlessAuthenticationRequest) GetHeadlessAuthenticationClie
 	return ""
 }
 
+// Response for SendPendingHeadlessAuthentication.
 type SendPendingHeadlessAuthenticationResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -484,6 +494,7 @@ func (*SendPendingHeadlessAuthenticationResponse) Descriptor() ([]byte, []int) {
 	return file_teleport_lib_teleterm_v1_tshd_events_service_proto_rawDescGZIP(), []int{7}
 }
 
+// Request for PromptMFA.
 type PromptMFARequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -555,6 +566,7 @@ func (x *PromptMFARequest) GetWebauthn() bool {
 	return false
 }
 
+// Response for PromptMFA.
 type PromptMFAResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
