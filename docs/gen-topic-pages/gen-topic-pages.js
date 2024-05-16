@@ -171,8 +171,9 @@ ${this.command}*/}
 ${fm.description} ([more info](${this.relativePathToFile(p) + '.mdx'})):
 
 `;
-
-      newText = this.addTopicsFromDir(p, newText, level + 1);
+      if (level <= maxLevel) {
+        newText = this.addTopicsFromDir(p, newText, level + 1);
+      }
     });
 
     return newText;
