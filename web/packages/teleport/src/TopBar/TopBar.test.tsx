@@ -17,6 +17,7 @@
  */
 
 import React from 'react';
+import { subSeconds, subMinutes } from 'date-fns';
 import { render, screen, userEvent } from 'design/utils/testing';
 import { Router } from 'react-router';
 import { createMemoryHistory } from 'history';
@@ -35,9 +36,13 @@ import { NotificationKind } from 'teleport/stores/storeNotifications';
 
 import { clusters } from 'teleport/Clusters/fixtures';
 
+import { NotificationSubKind } from 'teleport/services/notifications';
+
 import { TopBar } from './TopBar';
 
 let ctx: TeleportContext;
+
+beforeAll(() => jest.clearAllMocks());
 
 function setup(): void {
   ctx = new TeleportContext();
@@ -54,22 +59,50 @@ function setup(): void {
       lastConnected: Date.now(),
     },
   });
+
+  global.IntersectionObserver = jest.fn(callback => {
+    callback(
+      [
+        {
+          // This is the property that triggers the fetch. We need it to be true.
+          isIntersecting: true,
+          intersectionRatio: null,
+          boundingClientRect: null,
+          intersectionRect: null,
+          rootBounds: null,
+          target: null,
+          time: null,
+        },
+      ],
+      null
+    );
+    return {
+      observe: jest.fn(),
+      unobserve: jest.fn(),
+      disconnect: jest.fn(),
+      takeRecords: jest.fn(),
+      root: null,
+      rootMargin: null,
+      thresholds: null,
+    };
+  });
+
   mockUserContextProviderWith(makeTestUserContext());
 }
 
-// TODO(rudream): adapt access list notifications to new notifications system
-test.skip('notification bell without notification', async () => {
+test('notification bell without notification', async () => {
   setup();
 
   render(getTopBar());
-  await screen.findByTestId('tb-note');
+  await screen.findByTestId('tb-notifications');
 
-  expect(screen.getByTestId('tb-note')).toBeInTheDocument();
-  expect(screen.queryByTestId('tb-note-attention')).not.toBeInTheDocument();
+  expect(screen.getByTestId('tb-notifications')).toBeInTheDocument();
+  expect(
+    screen.queryByTestId('tb-notifications-badge')
+  ).not.toBeInTheDocument();
 });
 
-// TODO(rudream): adapt access list notifications to new notifications system
-test.skip('notification bell with notification', async () => {
+test('notification bell with notification', async () => {
   setup();
   ctx.storeNotifications.state = {
     notifications: [
@@ -85,17 +118,44 @@ test.skip('notification bell with notification', async () => {
     ],
   };
 
-  render(getTopBar());
-  await screen.findByTestId('tb-note');
+  jest.spyOn(ctx.notificationService, 'fetchNotifications').mockResolvedValue({
+    nextKey: '',
+    userLastSeenNotification: subMinutes(Date.now(), 12), // 12 minutes ago
+    notifications: [
+      {
+        id: '1',
+        title: 'Example notification 1',
+        subKind: NotificationSubKind.UserCreatedInformational,
+        createdDate: subSeconds(Date.now(), 15), // 15 seconds ago
+        clicked: false,
+        labels: [
+          {
+            name: 'text-content',
+            value: 'This is the text content of the notification.',
+          },
+        ],
+      },
+    ],
+  });
 
-  expect(screen.getByTestId('tb-note')).toBeInTheDocument();
-  expect(screen.getByTestId('tb-note-attention')).toBeInTheDocument();
+  jest
+    .spyOn(ctx.notificationService, 'upsertLastSeenNotificationTime')
+    .mockResolvedValue({
+      time: new Date(),
+    });
+
+  render(getTopBar());
+  await screen.findByTestId('tb-notifications');
+
+  expect(screen.getByTestId('tb-notifications')).toBeInTheDocument();
+  expect(screen.getByTestId('tb-notifications-badge')).toBeInTheDocument();
+  expect(screen.getByTestId('tb-notifications-badge')).toHaveTextContent('2');
 
   // Test clicking and rendering of dropdown.
-  expect(screen.getByTestId('tb-note-dropdown')).not.toBeVisible();
+  expect(screen.getByTestId('tb-notifications-dropdown')).not.toBeVisible();
 
-  await userEvent.click(screen.getByTestId('tb-note-button'));
-  expect(screen.getByTestId('tb-note-dropdown')).toBeVisible();
+  await userEvent.click(screen.getByTestId('tb-notifications-button'));
+  expect(screen.getByTestId('tb-notifications-dropdown')).toBeVisible();
 });
 
 const getTopBar = () => {

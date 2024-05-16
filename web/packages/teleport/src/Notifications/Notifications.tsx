@@ -181,7 +181,7 @@ export function Notifications({ iconSize = 24 }: { iconSize?: number }) {
   return (
     <NotificationButtonContainer
       ref={ref}
-      data-testid="tb-note"
+      data-testid="tb-notifications"
       className={IGNORE_CLICK_CLASSNAME}
     >
       <HoverTooltip
@@ -194,11 +194,11 @@ export function Notifications({ iconSize = 24 }: { iconSize?: number }) {
       >
         <ButtonIconContainer
           onClick={onIconClick}
-          data-testid="tb-note-button"
+          data-testid="tb-notifications-button"
           open={open}
         >
           {unseenNotifsCount > 0 && (
-            <UnseenBadge>
+            <UnseenBadge data-testid="tb-notifications-badge">
               {unseenNotifsCount >= 9 ? '9+' : unseenNotifsCount}
             </UnseenBadge>
           )}
@@ -209,7 +209,10 @@ export function Notifications({ iconSize = 24 }: { iconSize?: number }) {
         </ButtonIconContainer>
       </HoverTooltip>
 
-      <NotificationsDropdown open={open} data-testid="tb-note-dropdown">
+      <NotificationsDropdown
+        open={open}
+        data-testid="tb-notifications-dropdown"
+      >
         <Header view={view} setView={setView} />
         {attempt.status === 'failed' && (
           <Box px={3}>
@@ -351,7 +354,7 @@ function accessListNotifToNotification(
     title: titleText,
     id: accessListNotif.id,
     subKind: StoreNotificationKind.AccessList,
-    clicked: accessListNotif.clicked,
+    clicked: !!accessListNotif.clicked,
     createdDate: today,
     labels: [{ name: 'redirect-route', value: accessListNotif.item.route }],
   };

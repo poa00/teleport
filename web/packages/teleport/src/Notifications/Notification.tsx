@@ -157,6 +157,7 @@ export function Notification({
   return (
     <>
       <Container
+        data-testid="notification-item"
         clicked={isClicked}
         onClick={onNotificationClick}
         className="notification"
