@@ -24,6 +24,7 @@ import {
   Notification as NotificationType,
   NotificationSubKind,
 } from 'teleport/services/notifications';
+import { NotificationKind as StoreNotificationsKind } from 'teleport/stores/storeNotifications';
 import { Label } from 'teleport/types';
 
 /**
@@ -62,6 +63,18 @@ export function notificationContentFactory({
       };
       break;
     }
+
+    case StoreNotificationsKind.AccessList:
+      const redirectRoute = getLabelValue(labels, 'redirect-route');
+
+      notificationContent = {
+        kind: 'redirect',
+        title: notification.title,
+        type: 'warning',
+        icon: Icons.UserList,
+        redirectRoute,
+      };
+      break;
     default:
       return null;
   }

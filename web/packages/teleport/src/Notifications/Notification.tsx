@@ -76,12 +76,36 @@ export function Notification({
       })
   );
 
-  const [hideNotificationAttempt, hideNotification] = useAsync(() => {
-    return ctx.notificationService.upsertNotificationState(clusterId, {
-      notificationId: notification.id,
-      notificationState: NotificationState.DISMISSED,
+  const [hideNotificationAttempt, hideNotification, setHideNotificationState] =
+    useAsync(() => {
+      return ctx.notificationService.upsertNotificationState(clusterId, {
+        notificationId: notification.id,
+        notificationState: NotificationState.DISMISSED,
+      });
     });
-  });
+
+  function onMarkAsClicked() {
+    if (notification.localNotification) {
+      ctx.storeNotifications.markNotificationAsClicked(notification.id);
+      setClicked(true);
+      return;
+    }
+    markAsClicked();
+  }
+
+  function onHide() {
+    if (notification.localNotification) {
+      setHideNotificationState({
+        status: 'success',
+        statusText: '',
+        data: undefined,
+      });
+      ctx.storeNotifications.markNotificationAsHidden(notification.id);
+      return;
+    }
+    hideNotification();
+  }
+
   // Whether to show the text content dialog. This is only ever used for user-created notifications which only contain informational text
   // and don't redirect to any page.
   const [showTextContentDialog, setShowTextContentDialog] = useState(false);
@@ -117,7 +141,7 @@ export function Notification({
   const formattedDate = formatDate(notification.createdDate);
 
   function onNotificationClick(e: React.MouseEvent<HTMLElement>) {
-    markAsClicked();
+    onMarkAsClicked();
     // Prevents this from being triggered when the user is just clicking away from
     // an open "mark as read/hide this notification" menu popover.
     if (e.currentTarget.contains(e.target as HTMLElement)) {
@@ -155,7 +179,7 @@ export function Notification({
           <ContentBody>
             <Text>{content.title}</Text>
             {content.kind === 'redirect' && content.QuickAction && (
-              <content.QuickAction markAsClicked={markAsClicked} />
+              <content.QuickAction markAsClicked={onMarkAsClicked} />
             )}
             {hideNotificationAttempt.status === 'error' && (
               <Text typography="subtitle3" color="error.main">
@@ -182,16 +206,13 @@ export function Notification({
             >
               {!isClicked && (
                 <MenuItem
-                  onClick={markAsClicked}
+                  onClick={onMarkAsClicked}
                   className={IGNORE_CLICK_CLASSNAME}
                 >
                   Mark as read
                 </MenuItem>
               )}
-              <MenuItem
-                onClick={hideNotification}
-                className={IGNORE_CLICK_CLASSNAME}
-              >
+              <MenuItem onClick={onHide} className={IGNORE_CLICK_CLASSNAME}>
                 Hide this notification
               </MenuItem>
             </MenuIcon>

@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { NotificationKind as StoreNotificationKinds } from 'teleport/stores/storeNotifications';
 import { Label } from 'teleport/types';
 
 export type FetchNotificationsResponse = {
@@ -65,7 +66,7 @@ export type Notification = {
   /** id is the uuid of this notification */
   id: string;
   /* subKind is a string which represents which type of notification this is, ie. "access-request-approved" */
-  subKind: NotificationSubKind;
+  subKind: NotificationSubKind | StoreNotificationKinds;
   /** createdDate is when the notification was created. */
   createdDate: Date;
   /** clicked is whether this notification has been clicked on by this user. */
@@ -74,6 +75,10 @@ export type Notification = {
   labels: Label[];
   /** title is the title of this notification. This can be overwritten in notificationContentFactory if needed. */
   title: string;
+  /** localNotification is whether this is a notification stored in a frontend store as opposed to a "real" notification
+   * from the notifications system.
+   */
+  localNotification?: boolean;
 };
 
 /** NotificationSubKind is the subkind of notifications, these should be kept in sync with the values in api/types/constants.go */

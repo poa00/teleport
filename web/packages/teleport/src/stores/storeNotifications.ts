@@ -18,6 +18,7 @@
 
 import { Store } from 'shared/libs/stores';
 import { assertUnreachable } from 'shared/utils/assertUnreachable';
+import { KeysEnum } from 'teleport/services/storageService';
 
 export enum NotificationKind {
   AccessList = 'access-list',
@@ -33,25 +34,58 @@ export type Notification = {
   item: AccessListNotification;
   id: string;
   date: Date;
+  clicked?: boolean;
 };
 
 // TODO?: based on a feedback, consider representing
 // notifications as a collection of maps indexed by id
 // which is then converted to a sorted list as needed
 // (may be easier to work with)
-export type NotificationState = {
+export type NotificationStoreState = {
   notifications: Notification[];
 };
 
-const defaultNotificationState: NotificationState = {
+const defaultNotificationStoreState: NotificationStoreState = {
   notifications: [],
 };
 
-export class StoreNotifications extends Store<NotificationState> {
-  state: NotificationState = defaultNotificationState;
+type LocalNotificationStates = {
+  clicked: string[];
+  hidden: string[];
+};
 
-  getNotifications() {
-    return this.state.notifications;
+const defaultLocalNotificationStates: LocalNotificationStates = {
+  clicked: [],
+  hidden: [],
+};
+
+export class StoreNotifications extends Store<NotificationStoreState> {
+  state: NotificationStoreState = defaultNotificationStoreState;
+
+  getNotifications(): Notification[] {
+    const allNotifs = this.state.notifications;
+    const notifStates = this.getNotificationStates();
+
+    if (allNotifs.length === 0) {
+      this.clearNotificationStates();
+      return [];
+    }
+
+    // Filter out hidden notifications.
+    const filtered = allNotifs.filter(notification => {
+      return notifStates.hidden.indexOf(notification.id) === -1;
+    });
+
+    return filtered.map(notification => {
+      // Mark clicked notifications as clicked.
+      if (notifStates.clicked.indexOf(notification.id) !== -1) {
+        return {
+          ...notification,
+          clicked: true,
+        };
+      }
+      return notification;
+    });
   }
 
   setNotifications(notices: Notification[]) {
@@ -84,5 +118,56 @@ export class StoreNotifications extends Store<NotificationState> {
       default:
         assertUnreachable(kind);
     }
+  }
+
+  getNotificationStates(): LocalNotificationStates {
+    const value = window.localStorage.getItem(
+      KeysEnum.LOCAL_NOTIFICATION_STATES
+    );
+
+    if (!value) {
+      return defaultLocalNotificationStates;
+    }
+
+    try {
+      return JSON.parse(value) as LocalNotificationStates;
+    } catch (err) {
+      return defaultLocalNotificationStates;
+    }
+  }
+
+  markNotificationAsClicked(id: string) {
+    const currentStates = this.getNotificationStates();
+
+    const updatedStates: LocalNotificationStates = {
+      clicked: [...currentStates.clicked, id],
+      hidden: currentStates.hidden,
+    };
+
+    localStorage.setItem(
+      KeysEnum.LOCAL_NOTIFICATION_STATES,
+      JSON.stringify(updatedStates)
+    );
+  }
+
+  markNotificationAsHidden(id: string) {
+    const currentStates = this.getNotificationStates();
+
+    const updatedStates: LocalNotificationStates = {
+      clicked: currentStates.clicked,
+      hidden: [...currentStates.hidden, id],
+    };
+
+    localStorage.setItem(
+      KeysEnum.LOCAL_NOTIFICATION_STATES,
+      JSON.stringify(updatedStates)
+    );
+  }
+
+  clearNotificationStates() {
+    localStorage.setItem(
+      KeysEnum.LOCAL_NOTIFICATION_STATES,
+      JSON.stringify(defaultLocalNotificationStates)
+    );
   }
 }
