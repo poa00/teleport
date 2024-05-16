@@ -86,9 +86,6 @@ func unmarshalResource(data []byte, opts ...services.MarshalOption) (*testResour
 	if err := r.CheckAndSetDefaults(); err != nil {
 		return nil, trace.Wrap(err)
 	}
-	if cfg.ID != 0 {
-		r.SetResourceID(cfg.ID)
-	}
 	if cfg.Revision != "" {
 		r.SetRevision(cfg.Revision)
 	}

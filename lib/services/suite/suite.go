@@ -2120,8 +2120,6 @@ skiploop:
 				Namespace: meta.Namespace,
 			},
 		}
-		// delete events don't have IDs yet
-		header.SetResourceID(0)
 		ExpectDeleteResource(t, w, 3*time.Second, header)
 	}
 }

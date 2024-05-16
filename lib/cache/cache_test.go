@@ -1171,8 +1171,7 @@ func initStrategy(t *testing.T) {
 	// backend is out, but old value is available
 	out2, err := p.cache.GetCertAuthority(ctx, ca.GetID(), false)
 	require.NoError(t, err)
-	require.Equal(t, out.GetResourceID(), out2.GetResourceID())
-	require.Empty(t, cmp.Diff(normalizeCA(ca), normalizeCA(out), cmpopts.IgnoreFields(types.Metadata{}, "ID", "Revision")))
+	require.Empty(t, cmp.Diff(normalizeCA(ca), normalizeCA(out2), cmpopts.IgnoreFields(types.Metadata{}, "ID", "Revision")))
 
 	// add modification and expect the resource to recover
 	ca.SetRoleMap(types.RoleMap{types.RoleMapping{Remote: "test", Local: []string{"local-test"}}})
@@ -3283,9 +3282,8 @@ func TestInvalidDatabases(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	generateInvalidDB := func(t *testing.T, resourceID int64, name string) types.Database {
+	generateInvalidDB := func(t *testing.T, name string) types.Database {
 		db := &types.DatabaseV3{Metadata: types.Metadata{
-			ID:   resourceID,
 			Name: name,
 		}, Spec: types.DatabaseSpecV3{
 			Protocol: "invalid-protocol",
@@ -3302,14 +3300,13 @@ func TestInvalidDatabases(t *testing.T) {
 	}{
 		"CreateDatabase": {
 			storeFunc: func(t *testing.T, b *backend.Wrapper, _ *Cache) {
-				db := generateInvalidDB(t, 0, "invalid-db")
+				db := generateInvalidDB(t, "invalid-db")
 				value, err := services.MarshalDatabase(db)
 				require.NoError(t, err)
 				_, err = b.Create(ctx, backend.Item{
 					Key:     backend.Key("db", db.GetName()),
 					Value:   value,
 					Expires: db.Expiry(),
-					ID:      db.GetResourceID(),
 				})
 				require.NoError(t, err)
 			},
@@ -3332,7 +3329,6 @@ func TestInvalidDatabases(t *testing.T) {
 					Key:     backend.Key("db", validDB.GetName()),
 					Value:   marshalledDB,
 					Expires: validDB.Expiry(),
-					ID:      validDB.GetResourceID(),
 				})
 				require.NoError(t, err)
 
@@ -3346,14 +3342,13 @@ func TestInvalidDatabases(t *testing.T) {
 				cacheDB, err := c.GetDatabase(ctx, dbName)
 				require.NoError(t, err)
 
-				invalidDB := generateInvalidDB(t, cacheDB.GetResourceID(), cacheDB.GetName())
+				invalidDB := generateInvalidDB(t, cacheDB.GetName())
 				value, err := services.MarshalDatabase(invalidDB)
 				require.NoError(t, err)
 				_, err = b.Update(ctx, backend.Item{
 					Key:     backend.Key("db", cacheDB.GetName()),
 					Value:   value,
 					Expires: invalidDB.Expiry(),
-					ID:      cacheDB.GetResourceID(),
 				})
 				require.NoError(t, err)
 			},

@@ -3305,9 +3305,6 @@ func UnmarshalRoleV6(bytes []byte, opts ...MarshalOption) (*types.RoleV6, error)
 			return nil, trace.Wrap(err)
 		}
 
-		if cfg.ID != 0 {
-			role.SetResourceID(cfg.ID)
-		}
 		if cfg.Revision != "" {
 			role.SetRevision(cfg.Revision)
 		}
@@ -3333,7 +3330,7 @@ func MarshalRole(role types.Role, opts ...MarshalOption) ([]byte, error) {
 
 	switch role := role.(type) {
 	case *types.RoleV6:
-		return utils.FastMarshal(maybeResetProtoResourceID(cfg.PreserveResourceID, role))
+		return utils.FastMarshal(maybeResetProtoRevision(cfg.PreserveRevision, role))
 	default:
 		return nil, trace.BadParameter("unrecognized role version %T", role)
 	}
