@@ -42,7 +42,7 @@ import { TopBar } from './TopBar';
 
 let ctx: TeleportContext;
 
-beforeAll(() => jest.clearAllMocks());
+beforeEach(() => jest.clearAllMocks());
 
 function setup(): void {
   ctx = new TeleportContext();
