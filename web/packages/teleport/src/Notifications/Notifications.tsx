@@ -17,7 +17,7 @@
  */
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { isBefore, formatDistanceToNow } from 'date-fns';
+import { isBefore, formatDistanceToNowStrict } from 'date-fns';
 import styled from 'styled-components';
 import { Alert, Box, Flex, Indicator, Text } from 'design';
 
@@ -158,6 +158,26 @@ export function Notifications({ iconSize = 24 }: { iconSize?: number }) {
       isBefore(userLastSeenNotification, notif.createdDate) && !notif.clicked
   ).length;
 
+  function removeNotification(notificationId: string) {
+    const notificationsCopy = [...notifications];
+    const index = notificationsCopy.findIndex(
+      notif => notif.id == notificationId
+    );
+    notificationsCopy.splice(index, 1);
+
+    updateFetchedResources(notificationsCopy);
+  }
+
+  function markNotificationAsClicked(notificationId: string) {
+    const newNotifications = notifications.map(notification => {
+      return notification.id === notificationId
+        ? { ...notification, clicked: true }
+        : notification;
+    });
+
+    updateFetchedResources(newNotifications);
+  }
+
   return (
     <NotificationButtonContainer
       ref={ref}
@@ -203,7 +223,13 @@ export function Notifications({ iconSize = 24 }: { iconSize?: number }) {
           <>
             {!!notifications.length &&
               notifications.map(notif => (
-                <Notification notification={notif} key={notif.id} view={view} />
+                <Notification
+                  notification={notif}
+                  key={notif.id}
+                  view={view}
+                  markNotificationAsClicked={markNotificationAsClicked}
+                  removeNotification={removeNotification}
+                />
               ))}
             {open && <div ref={setTrigger} />}
             {attempt.status === 'processing' && (
@@ -311,7 +337,7 @@ function accessListNotifToNotification(
   accessListNotif: AccessListNotification
 ): NotificationType {
   const today = new Date();
-  const numDays = formatDistanceToNow(accessListNotif.date);
+  const numDays = formatDistanceToNowStrict(accessListNotif.date);
 
   let titleText;
   if (accessListNotif.date <= today) {

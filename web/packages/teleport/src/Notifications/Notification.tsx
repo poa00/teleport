@@ -54,13 +54,16 @@ import { View } from './Notifications';
 export function Notification({
   notification,
   view = 'All',
+  removeNotification,
+  markNotificationAsClicked,
 }: {
   notification: NotificationType;
   view?: View;
+  removeNotification?: (notificationId: string) => void;
+  markNotificationAsClicked?: (notificationId: string) => void;
 }) {
   const ctx = useTeleport();
   const { clusterId } = useStickyClusterId();
-  const [clicked, setClicked] = useState(notification.clicked);
 
   const content = ctx.notificationContentFactory(notification);
 
@@ -71,23 +74,27 @@ export function Notification({
         notificationState: NotificationState.CLICKED,
       })
       .then(res => {
-        setClicked(true);
+        markNotificationAsClicked(notification.id);
         return res;
       })
   );
 
   const [hideNotificationAttempt, hideNotification, setHideNotificationState] =
     useAsync(() => {
-      return ctx.notificationService.upsertNotificationState(clusterId, {
-        notificationId: notification.id,
-        notificationState: NotificationState.DISMISSED,
-      });
+      return ctx.notificationService
+        .upsertNotificationState(clusterId, {
+          notificationId: notification.id,
+          notificationState: NotificationState.DISMISSED,
+        })
+        .then(() => {
+          removeNotification(notification.id);
+        });
     });
 
   function onMarkAsClicked() {
     if (notification.localNotification) {
       ctx.storeNotifications.markNotificationAsClicked(notification.id);
-      setClicked(true);
+      markNotificationAsClicked(notification.id);
       return;
     }
     markAsClicked();
@@ -95,12 +102,8 @@ export function Notification({
 
   function onHide() {
     if (notification.localNotification) {
-      setHideNotificationState({
-        status: 'success',
-        statusText: '',
-        data: undefined,
-      });
       ctx.storeNotifications.markNotificationAsHidden(notification.id);
+      removeNotification(notification.id);
       return;
     }
     hideNotification();
@@ -112,12 +115,7 @@ export function Notification({
 
   // If the notification is unsupported or hidden, or if the view is "Unread" and the notification has been read,
   // it should not be shown.
-  if (
-    !content ||
-    hideNotificationAttempt.status === 'success' ||
-    hideNotificationAttempt.status === 'processing' ||
-    (view === 'Unread' && clicked)
-  ) {
+  if (!content) {
     return null;
   }
 
@@ -154,11 +152,7 @@ export function Notification({
   }
 
   const isClicked =
-    clicked ||
-    markAsClickedAttempt.status === 'processing' ||
-    (markAsClickedAttempt.status === 'success' &&
-      markAsClickedAttempt.data.notificationState ===
-        NotificationState.CLICKED);
+    notification.clicked || markAsClickedAttempt.status === 'processing';
 
   return (
     <>
