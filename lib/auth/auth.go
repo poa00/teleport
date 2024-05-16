@@ -5166,6 +5166,10 @@ func (a *Server) submitAccessReview(
 		// If this was a resource request.
 		if len(req.GetRequestedResourceIDs()) > 0 {
 			notificationText = fmt.Sprintf("%s denied your access request for %d resources.", params.Review.Author, len(req.GetRequestedResourceIDs()))
+			if len(req.GetRequestedResourceIDs()) == 1 {
+				notificationText = fmt.Sprintf("%s denied your access request for a resource.", params.Review.Author)
+
+			}
 			// If this was a role request.
 		} else {
 			notificationText = fmt.Sprintf("%s denied your access request for the '%s' role.", params.Review.Author, req.GetRoles()[0])

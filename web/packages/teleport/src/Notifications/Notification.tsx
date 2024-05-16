@@ -117,15 +117,14 @@ export function Notification({
   const formattedDate = formatDate(notification.createdDate);
 
   function onNotificationClick(e: React.MouseEvent<HTMLElement>) {
+    markAsClicked();
     // Prevents this from being triggered when the user is just clicking away from
     // an open "mark as read/hide this notification" menu popover.
     if (e.currentTarget.contains(e.target as HTMLElement)) {
       if (content.kind === 'text') {
         setShowTextContentDialog(true);
-        markAsClicked();
         return;
       }
-      markAsClicked();
       history.push(content.redirectRoute);
     }
   }
@@ -275,6 +274,10 @@ const ContentBody = styled.div`
   justify-content: center;
   align-items: flex-start;
   gap: ${props => props.theme.space[2]}px;
+
+  button {
+    text-transform: none;
+  }
 `;
 
 const SideContent = styled.div`
