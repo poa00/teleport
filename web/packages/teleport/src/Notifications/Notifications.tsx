@@ -31,19 +31,22 @@ import { useInfiniteScroll } from 'shared/hooks';
 import { useKeyBasedPagination } from 'shared/hooks/useInfiniteScroll';
 import { IGNORE_CLICK_CLASSNAME } from 'shared/hooks/useRefClickOutside/useRefClickOutside';
 
+import { useStore } from 'shared/libs/stores';
+
 import { useTeleport } from 'teleport';
 import useStickyClusterId from 'teleport/useStickyClusterId';
 import { Dropdown } from 'teleport/components/Dropdown';
 
 import { ButtonIconContainer } from 'teleport/TopBar/Shared';
 
-import { Notification } from './Notification';
 import { Notification as NotificationType } from 'teleport/services/notifications';
-import { useStore } from 'shared/libs/stores';
+
 import {
   Notification as AccessListNotification,
   NotificationKind as StoreNotificationKind,
 } from 'teleport/stores/storeNotifications';
+
+import { Notification } from './Notification';
 
 const PAGE_SIZE = 15;
 
@@ -229,7 +232,6 @@ export function Notifications({ iconSize = 24 }: { iconSize?: number }) {
                 <Notification
                   notification={notif}
                   key={notif.id}
-                  view={view}
                   markNotificationAsClicked={markNotificationAsClicked}
                   removeNotification={removeNotification}
                 />

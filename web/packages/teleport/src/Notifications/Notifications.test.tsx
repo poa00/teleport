@@ -27,12 +27,13 @@ import { LayoutContextProvider } from 'teleport/Main/LayoutContext';
 
 import { NotificationKind } from 'teleport/stores/storeNotifications';
 
-import { Notifications } from './Notifications';
 import { FeaturesContextProvider } from 'teleport/FeaturesContext';
 import { getOSSFeatures } from 'teleport/features';
 import TeleportContextProvider from 'teleport/TeleportContextProvider';
 import TeleportContext from 'teleport/teleportContext';
 import { NotificationSubKind } from 'teleport/services/notifications';
+
+import { Notifications } from './Notifications';
 
 beforeAll(() => {
   jest.useFakeTimers();

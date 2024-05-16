@@ -49,16 +49,12 @@ import { useTeleport } from '..';
 
 import { NotificationContent } from './notificationContentFactory';
 
-import { View } from './Notifications';
-
 export function Notification({
   notification,
-  view = 'All',
   removeNotification,
   markNotificationAsClicked,
 }: {
   notification: NotificationType;
-  view?: View;
   removeNotification?: (notificationId: string) => void;
   markNotificationAsClicked?: (notificationId: string) => void;
 }) {
@@ -79,17 +75,16 @@ export function Notification({
       })
   );
 
-  const [hideNotificationAttempt, hideNotification, setHideNotificationState] =
-    useAsync(() => {
-      return ctx.notificationService
-        .upsertNotificationState(clusterId, {
-          notificationId: notification.id,
-          notificationState: NotificationState.DISMISSED,
-        })
-        .then(() => {
-          removeNotification(notification.id);
-        });
-    });
+  const [hideNotificationAttempt, hideNotification] = useAsync(() => {
+    return ctx.notificationService
+      .upsertNotificationState(clusterId, {
+        notificationId: notification.id,
+        notificationState: NotificationState.DISMISSED,
+      })
+      .then(() => {
+        removeNotification(notification.id);
+      });
+  });
 
   function onMarkAsClicked() {
     if (notification.localNotification) {
