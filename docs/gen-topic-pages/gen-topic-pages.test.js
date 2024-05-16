@@ -1,9 +1,9 @@
 import { Volume, createFsFromVolume } from 'memfs';
 import { TopicContentsFragment } from './gen-topic-pages.js';
 
-describe('generate All Topics page', () => {
+describe('generate a menu page', () => {
   const testFilesTwoSections = {
-    '/docs/database-access.mdx': `title: "Database Access"
+    '/docs/database-access.yaml': `title: "Database Access"
 description: "Guides related to Database Access"
 ---`,
     '/docs/database-access/page1.mdx': `title: "Database Access Page 1"
@@ -12,7 +12,7 @@ description: "Protecting DB 1 with Teleport"
     '/docs/database-access/page2.mdx': `title: "Database Access Page 2"
 description: "Protecting DB 2 with Teleport"
 ---`,
-    '/docs/application-access.mdx': `title: "Application Access"
+    '/docs/application-access.yaml': `title: "Application Access"
 description: "Guides related to Application Access"
 ---`,
     '/docs/application-access/page1.mdx': `title: "Application Access Page 1"
@@ -56,7 +56,7 @@ sample-command*/}
 `;
 
     const vol = Volume.fromJSON({
-      '/docs/database-access.mdx': `title: "Database Access"
+      '/docs/database-access.yaml': `title: "Database Access"
 description: "Guides related to Database Access"
 ---`,
       '/docs/database-access/page1.mdx': `---
@@ -90,7 +90,7 @@ sample-command*/}
 `;
 
     const vol = Volume.fromJSON({
-      '/docs/database-access.mdx': `title: "Database Access"
+      '/docs/database-access.yaml': `title: "Database Access"
 description: "Guides related to Database Access"
 ---`,
       '/docs/database-access/introduction.mdx': `title: "Introduction"
@@ -132,7 +132,7 @@ Guides related to Application Access ([more info](../application-access.mdx))
 `;
 
     const vol = Volume.fromJSON({
-      '/docs/application-access.mdx': `title: "Application Access"
+      '/docs/application-access.yaml': `title: "Application Access"
 description: "Guides related to Application Access"
 ---`,
       '/docs/application-access/page1.mdx': `title: "Application Access Page 1"
@@ -202,7 +202,7 @@ Guides related to JWTs ([more info](../application-access/jwt.mdx))
 `;
 
     const vol = Volume.fromJSON({
-      '/docs/application-access.mdx': `title: "Application Access"
+      '/docs/application-access.yaml': `title: "Application Access"
 description: "Guides related to Application Access"
 ---`,
       '/docs/application-access/page1.mdx': `title: "Application Access Page 1"
@@ -226,4 +226,5 @@ description: "Protecting JWT App 2 with Teleport"
     const actual = frag.makeTopicTree();
     expect(actual).toBe(expected);
   });
+
 });
