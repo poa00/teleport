@@ -107,14 +107,17 @@ ${this.command}*/}
 
     // List all MDX files in the subdirectory with the same name as a
     // subdirectory. By convention, these are menu pages for the subdirectory.
-    const menuPages = Object.keys(mdxFiles).reduce((accum, current) => {
-      const parts = path.parse(current);
+    const menuPageConfigs = files.reduce((accum, current) => {
+      if (!current.endsWith('.yaml')) {
+        return accum;
+      }
+      const parts = path.parse(path.join(dirPath, current));
       const asDir = path.join(parts.dir, parts.name);
       if (dirs[asDir]) {
-        accum[current] = true;
+        accum[path.join(dirPath, current)] = true;
         // Exclude the menu page from the map of regular MDX pages. We
         // treat these separately.
-        delete mdxFiles[current];
+        delete mdxFiles[asDir + '.mdx'];
       }
       return accum;
     }, {});
@@ -137,12 +140,12 @@ ${this.command}*/}
 
     // Add another section of the topic for each subdirectory.
     Object.keys(dirs).forEach(p => {
-      if (!menuPages[p + '.mdx']) {
+      if (!menuPageConfigs[p + '.yaml']) {
         throw new Error(
-          `expecting a menu page for ${p} called ${p + '.mdx'}, but there is none`
+          `expecting a menu page for ${p} called ${p + '.yaml'}, but there is none`
         );
       }
-      const fm = this.getFrontmatter(p + '.mdx');
+      const fm = this.getFrontmatter(p + '.yaml');
       let heading = '';
       for (let i = 0; i < level; i++) {
         heading += '#';

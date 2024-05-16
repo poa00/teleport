@@ -211,7 +211,7 @@ description: "Protecting App 1 with Teleport"
       '/docs/application-access/page2.mdx': `title: "Application Access Page 2"
 description: "Protecting App 2 with Teleport"
 ---`,
-      '/docs/application-access/jwt.mdx': `title: "JWT guides"
+      '/docs/application-access/jwt.yaml': `title: "JWT guides"
 description: "Guides related to JWTs"
 ---`,
       '/docs/application-access/jwt/page1.mdx': `title: "JWT Page 1"
