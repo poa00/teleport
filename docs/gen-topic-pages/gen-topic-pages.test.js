@@ -166,7 +166,7 @@ Guides related to Database Access ([more info](../database-access.mdx)):
     expect(actual).toBe(expected);
   });
 
-  test('nested directories', () => {
+  test('limits menus to two directory levels', () => {
     const expected = `{/*GENERATED PARTIAL. DO NOT EDIT. RECREATE WITH THIS COMMAND:
 sample-command*/}
 
@@ -176,13 +176,7 @@ Guides related to Application Access ([more info](../application-access.mdx)):
 
 - [Application Access Page 1](../application-access/page1.mdx): Protecting App 1 with Teleport
 - [Application Access Page 2](../application-access/page2.mdx): Protecting App 2 with Teleport
-
-### JWT guides
-
-Guides related to JWTs ([more info](../application-access/jwt.mdx)):
-
-- [JWT Page 1](../application-access/jwt/page1.mdx): Protecting JWT App 1 with Teleport
-- [JWT Page 2](../application-access/jwt/page2.mdx): Protecting JWT App 2 with Teleport
+- [JWT guides](../application-access/jwt.mdx): Guides related to JWTs
 `;
 
     const vol = Volume.fromJSON({
