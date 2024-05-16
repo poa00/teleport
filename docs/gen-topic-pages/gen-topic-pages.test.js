@@ -27,10 +27,8 @@ description: "Protecting App 2 with Teleport"
     const expected = `{/*GENERATED PARTIAL. DO NOT EDIT. RECREATE WITH THIS COMMAND:
 sample-command*/}
 
-|Topic|Description|
-|---|---|
-|[Database Access Page 1](../page1.mdx)|Protecting DB 1 with Teleport|
-|[Database Access Page 2](../page2.mdx)|Protecting DB 2 with Teleport|
+- [Database Access Page 1](../page1.mdx): Protecting DB 1 with Teleport
+- [Database Access Page 2](../page2.mdx): Protecting DB 2 with Teleport
 `;
 
     const vol = Volume.fromJSON(testFilesTwoSections);
@@ -49,10 +47,8 @@ sample-command*/}
     const expected = `{/*GENERATED PARTIAL. DO NOT EDIT. RECREATE WITH THIS COMMAND:
 sample-command*/}
 
-|Topic|Description|
-|---|---|
-|[Database Access Page 1](../page1.mdx)|Protecting DB 1 with Teleport|
-|[Database Access Page 2](../page2.mdx)|Protecting DB 2 with Teleport|
+- [Database Access Page 1](../page1.mdx): Protecting DB 1 with Teleport
+- [Database Access Page 2](../page2.mdx): Protecting DB 2 with Teleport
 `;
 
     const vol = Volume.fromJSON({
@@ -82,11 +78,9 @@ description: "Protecting DB 2 with Teleport"
     const expected = `{/*GENERATED PARTIAL. DO NOT EDIT. RECREATE WITH THIS COMMAND:
 sample-command*/}
 
-|Topic|Description|
-|---|---|
-|[Introduction](../introduction.mdx)|Protecting databases with Teleport|
-|[Database Access Page 1](../page1.mdx)|Protecting DB 1 with Teleport|
-|[Database Access Page 2](../page2.mdx)|Protecting DB 2 with Teleport|
+- [Introduction](../introduction.mdx): Protecting databases with Teleport
+- [Database Access Page 1](../page1.mdx): Protecting DB 1 with Teleport
+- [Database Access Page 2](../page2.mdx): Protecting DB 2 with Teleport
 `;
 
     const vol = Volume.fromJSON({
@@ -123,12 +117,10 @@ sample-command*/}
 
 ## Application Access
 
-Guides related to Application Access ([more info](../application-access.mdx))
+Guides related to Application Access ([more info](../application-access.mdx)):
 
-|Topic|Description|
-|---|---|
-|[Application Access Page 1](../application-access/page1.mdx)|Protecting App 1 with Teleport|
-|[Application Access Page 2](../application-access/page2.mdx)|Protecting App 2 with Teleport|
+- [Application Access Page 1](../application-access/page1.mdx): Protecting App 1 with Teleport
+- [Application Access Page 2](../application-access/page2.mdx): Protecting App 2 with Teleport
 `;
 
     const vol = Volume.fromJSON({
@@ -154,21 +146,17 @@ sample-command*/}
 
 ## Application Access
 
-Guides related to Application Access ([more info](../application-access.mdx))
+Guides related to Application Access ([more info](../application-access.mdx)):
 
-|Topic|Description|
-|---|---|
-|[Application Access Page 1](../application-access/page1.mdx)|Protecting App 1 with Teleport|
-|[Application Access Page 2](../application-access/page2.mdx)|Protecting App 2 with Teleport|
+- [Application Access Page 1](../application-access/page1.mdx): Protecting App 1 with Teleport
+- [Application Access Page 2](../application-access/page2.mdx): Protecting App 2 with Teleport
 
 ## Database Access
 
-Guides related to Database Access ([more info](../database-access.mdx))
+Guides related to Database Access ([more info](../database-access.mdx)):
 
-|Topic|Description|
-|---|---|
-|[Database Access Page 1](../database-access/page1.mdx)|Protecting DB 1 with Teleport|
-|[Database Access Page 2](../database-access/page2.mdx)|Protecting DB 2 with Teleport|
+- [Database Access Page 1](../database-access/page1.mdx): Protecting DB 1 with Teleport
+- [Database Access Page 2](../database-access/page2.mdx): Protecting DB 2 with Teleport
 `;
 
     const vol = Volume.fromJSON(testFilesTwoSections);
@@ -184,21 +172,17 @@ sample-command*/}
 
 ## Application Access
 
-Guides related to Application Access ([more info](../application-access.mdx))
+Guides related to Application Access ([more info](../application-access.mdx)):
 
-|Topic|Description|
-|---|---|
-|[Application Access Page 1](../application-access/page1.mdx)|Protecting App 1 with Teleport|
-|[Application Access Page 2](../application-access/page2.mdx)|Protecting App 2 with Teleport|
+- [Application Access Page 1](../application-access/page1.mdx): Protecting App 1 with Teleport
+- [Application Access Page 2](../application-access/page2.mdx): Protecting App 2 with Teleport
 
 ### JWT guides
 
-Guides related to JWTs ([more info](../application-access/jwt.mdx))
+Guides related to JWTs ([more info](../application-access/jwt.mdx)):
 
-|Topic|Description|
-|---|---|
-|[JWT Page 1](../application-access/jwt/page1.mdx)|Protecting JWT App 1 with Teleport|
-|[JWT Page 2](../application-access/jwt/page2.mdx)|Protecting JWT App 2 with Teleport|
+- [JWT Page 1](../application-access/jwt/page1.mdx): Protecting JWT App 1 with Teleport
+- [JWT Page 2](../application-access/jwt/page2.mdx): Protecting JWT App 2 with Teleport
 `;
 
     const vol = Volume.fromJSON({

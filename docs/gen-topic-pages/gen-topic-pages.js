@@ -122,20 +122,11 @@ ${this.command}*/}
       return accum;
     }, {});
 
-    // Add a table of MDX pages within the directory.
-    if (Object.keys(mdxFiles).length > 0) {
-      newText =
-        newText +
-        `|Topic|Description|
-|---|---|
-`;
-    }
-
     // Add rows to the table.
     Object.keys(mdxFiles).forEach(f => {
       const relPath = this.relativePathToFile(f);
       const fm = this.getFrontmatter(f);
-      newText = newText + `|[${fm.title}](${relPath})|${fm.description}|\n`;
+      newText = newText + `- [${fm.title}](${relPath}): ${fm.description}\n`;
     });
 
     // Add another section of the topic for each subdirectory.
@@ -159,7 +150,7 @@ ${this.command}*/}
         newText +
         `${heading} ${fm.title}
 
-${fm.description} ([more info](${this.relativePathToFile(p) + '.mdx'}))
+${fm.description} ([more info](${this.relativePathToFile(p) + '.mdx'})):
 
 `;
 
