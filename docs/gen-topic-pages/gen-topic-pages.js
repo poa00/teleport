@@ -1,6 +1,8 @@
 const yaml = require('yaml');
 const path = require('path');
 
+const maxLevel = 1;
+
 // TopicContentsFragment contains data necessary to generate a table of contents
 // page for the subdirectories of a user-specified root directory.
 // @param fs - The filesystem to use. Either memfs or the NodeJS fs package.
@@ -32,7 +34,7 @@ class TopicContentsFragment {
 ${this.command}*/}
 
 `;
-    return this.addTopicsFromDir(this.root, initial, 2);
+    return this.addTopicsFromDir(this.root, initial, 0);
   }
 
   // getFrontmatter returns the frontmatter YAML of an MDX page as an object
@@ -98,8 +100,16 @@ ${this.command}*/}
     // List all subdirectories of the current directory
     const dirs = files.reduce((accum, current) => {
       const stats = this.fs.statSync(path.join(dirPath, current));
-      if (stats.isDirectory()) {
+      if (!stats.isDirectory()) {
+        return accum;
+      }
+      if (level !== maxLevel) {
         accum[path.join(dirPath, current)] = true;
+      } else {
+        // Since we're at the maximum level, link to the expected menu page
+        // for the child directory, and don't traverse the directory further.
+        // Use the YAML config to get information about the directory.
+        mdxFiles[path.join(dirPath, current + '.yaml')] = true;
       }
 
       return accum;
@@ -124,8 +134,16 @@ ${this.command}*/}
 
     // Add rows to the table.
     Object.keys(mdxFiles).forEach(f => {
-      const relPath = this.relativePathToFile(f);
+      let relPath = this.relativePathToFile(f);
       const fm = this.getFrontmatter(f);
+
+      // We're using a YAML file for directory information, so change the link
+      // to an MDX file. We expect there to be a menu page corresponding to the
+      // YAML config anyway.
+      if (relPath.endsWith('.yaml')) {
+        relPath = relPath.replace(/\.yaml$/, '.mdx');
+      }
+
       newText = newText + `- [${fm.title}](${relPath}): ${fm.description}\n`;
     });
 
@@ -137,7 +155,7 @@ ${this.command}*/}
         );
       }
       const fm = this.getFrontmatter(p + '.yaml');
-      let heading = '';
+      let heading = '##';
       for (let i = 0; i < level; i++) {
         heading += '#';
       }

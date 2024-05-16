@@ -204,5 +204,4 @@ description: "Protecting JWT App 2 with Teleport"
     const actual = frag.makeTopicTree();
     expect(actual).toBe(expected);
   });
-
 });
