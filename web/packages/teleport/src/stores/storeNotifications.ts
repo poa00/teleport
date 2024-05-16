@@ -68,7 +68,7 @@ export class StoreNotifications extends Store<NotificationStoreState> {
     const notifStates = this.getNotificationStates();
 
     if (allNotifs.length === 0) {
-      this.clearNotificationStates();
+      localStorage.removeItem(KeysEnum.LOCAL_NOTIFICATION_STATES);
       return [];
     }
 
@@ -162,13 +162,6 @@ export class StoreNotifications extends Store<NotificationStoreState> {
     localStorage.setItem(
       KeysEnum.LOCAL_NOTIFICATION_STATES,
       JSON.stringify(updatedStates)
-    );
-  }
-
-  clearNotificationStates() {
-    localStorage.setItem(
-      KeysEnum.LOCAL_NOTIFICATION_STATES,
-      JSON.stringify(defaultLocalNotificationStates)
     );
   }
 }
