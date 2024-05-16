@@ -88,7 +88,7 @@ export function Notifications({ iconSize = 24 }: { iconSize?: number }) {
           const localNotifications = ctx.storeNotifications.getNotifications();
           const processed = localNotifications.map(notif => {
             if (notif.item.kind == StoreNotificationKind.AccessList) {
-              return accessListNotifToNotification(notif);
+              return accessListStoreNotificationToNotification(notif);
             }
             return null;
           });
@@ -335,10 +335,10 @@ function EmptyState() {
   );
 }
 
-/** accessListNotifToNotification converts an access list notification from the notifications store into the primary
+/** accessListStoreNotificationToNotification converts an access list notification from the notifications store into the primary
  * Notification type used by the notifications list.
  */
-function accessListNotifToNotification(
+function accessListStoreNotificationToNotification(
   accessListNotif: AccessListNotification
 ): NotificationType {
   const today = new Date();
