@@ -5126,69 +5126,10 @@ func (a *Server) submitAccessReview(
 	}
 
 	// Create a notification.
-	if req.GetState().IsApproved() {
-		var notificationText string
-		// If this was a resource request.
-		if len(req.GetRequestedResourceIDs()) > 0 {
-			notificationText = fmt.Sprintf("%s approved your access request for %d resources.", params.Review.Author, len(req.GetRequestedResourceIDs()))
-			if len(req.GetRequestedResourceIDs()) == 1 {
-				notificationText = fmt.Sprintf("%s approved your access request for a resource.", params.Review.Author)
-			}
-			// If this was a role request.
-		} else {
-			notificationText = fmt.Sprintf("%s approved your access request for the '%s' role.", params.Review.Author, req.GetRoles()[0])
-			if len(req.GetRoles()) > 1 {
-				notificationText = fmt.Sprintf("%s approved your access request for %d roles.", params.Review.Author, len(req.GetRoles()))
-			}
-		}
-
-		assumableTime := ""
-		if req.GetAssumeStartTime() != nil {
-			assumableTime = req.GetAssumeStartTime().Format("2006-01-02T15:04:05.000Z0700")
-		}
-
-		_, err = a.Services.CreateUserNotification(ctx, &notificationsv1.Notification{
-			Spec: &notificationsv1.NotificationSpec{
-				Username: req.GetUser(),
-			},
-			SubKind: types.NotificationAccessRequestApprovedSubKind,
-			Metadata: &headerv1.Metadata{
-				Labels: map[string]string{types.NotificationTitleLabel: notificationText, "request-id": params.RequestID, "roles": strings.Join(req.GetRoles(), ","), "assumable-time": assumableTime},
-			},
-		})
+	if !req.GetState().IsPending() {
+		_, err = a.Services.CreateUserNotification(ctx, generateAccessRequestReviewedNotification(req, params))
 		if err != nil {
-			return nil, trace.Wrap(err)
-		}
-	}
-
-	if req.GetState().IsDenied() {
-		var notificationText string
-		// If this was a resource request.
-		if len(req.GetRequestedResourceIDs()) > 0 {
-			notificationText = fmt.Sprintf("%s denied your access request for %d resources.", params.Review.Author, len(req.GetRequestedResourceIDs()))
-			if len(req.GetRequestedResourceIDs()) == 1 {
-				notificationText = fmt.Sprintf("%s denied your access request for a resource.", params.Review.Author)
-
-			}
-			// If this was a role request.
-		} else {
-			notificationText = fmt.Sprintf("%s denied your access request for the '%s' role.", params.Review.Author, req.GetRoles()[0])
-			if len(req.GetRoles()) > 1 {
-				notificationText = fmt.Sprintf("%s denied your access request for %d roles.", params.Review.Author, len(req.GetRoles()))
-			}
-		}
-
-		_, err = a.Services.CreateUserNotification(ctx, &notificationsv1.Notification{
-			Spec: &notificationsv1.NotificationSpec{
-				Username: req.GetUser(),
-			},
-			SubKind: types.NotificationAccessRequestDeniedSubKind,
-			Metadata: &headerv1.Metadata{
-				Labels: map[string]string{types.NotificationTitleLabel: notificationText, "request-id": params.RequestID},
-			},
-		})
-		if err != nil {
-			return nil, trace.Wrap(err)
+			log.WithError(err).Debugf("Failed to emit access requeset reviewed notification.")
 		}
 	}
 
@@ -5205,6 +5146,55 @@ func (a *Server) submitAccessReview(
 	}
 
 	return req, nil
+}
+
+// generateAccessRequestReviewedNotification returns the notification object for a notification notifying a user of their
+// access request being approved or denied.
+func generateAccessRequestReviewedNotification(req types.AccessRequest, params types.AccessReviewSubmission) *notificationsv1.Notification {
+	var subKind string
+	var reviewVerb string
+
+	if req.GetState().IsApproved() {
+		subKind = types.NotificationAccessRequestApprovedSubKind
+		reviewVerb = "approved"
+	} else {
+		subKind = types.NotificationAccessRequestDeniedSubKind
+		reviewVerb = "denied"
+	}
+
+	var notificationText string
+	// If this was a resource request.
+	if len(req.GetRequestedResourceIDs()) > 0 {
+		notificationText = fmt.Sprintf("%s %s your access request for %d resources.", params.Review.Author, reviewVerb, len(req.GetRequestedResourceIDs()))
+		if len(req.GetRequestedResourceIDs()) == 1 {
+			notificationText = fmt.Sprintf("%s %s your access request for a resource.", params.Review.Author, reviewVerb)
+		}
+		// If this was a role request.
+	} else {
+		notificationText = fmt.Sprintf("%s %s your access request for the '%s' role.", params.Review.Author, reviewVerb, req.GetRoles()[0])
+		if len(req.GetRoles()) > 1 {
+			notificationText = fmt.Sprintf("%s %s your access request for %d roles.", params.Review.Author, reviewVerb, len(req.GetRoles()))
+		}
+	}
+
+	assumableTime := ""
+	if req.GetAssumeStartTime() != nil {
+		assumableTime = req.GetAssumeStartTime().Format("2006-01-02T15:04:05.000Z0700")
+	}
+
+	return &notificationsv1.Notification{
+		Spec: &notificationsv1.NotificationSpec{
+			Username: req.GetUser(),
+		},
+		SubKind: subKind,
+		Metadata: &headerv1.Metadata{
+			Labels: map[string]string{
+				types.NotificationTitleLabel: notificationText,
+				"request-id":                 params.RequestID,
+				"roles":                      strings.Join(req.GetRoles(), ","),
+				"assumable-time":             assumableTime,
+			}},
+	}
 }
 
 func (a *Server) GetAccessCapabilities(ctx context.Context, req types.AccessCapabilitiesRequest) (*types.AccessCapabilities, error) {
