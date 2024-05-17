@@ -1,0 +1,253 @@
+---
+title: Teleport Admin Guides
+description: How-to guides for setting up Teleport.
+---
+
+{/*GENERATED FILE. DO NOT EDIT. RECREATE WITH THIS COMMAND:
+undefined*/}
+
+How-to guides for setting up Teleport.
+
+- [Getting Started with Access Monitoring](/access-monitoring.mdx): Learn how to use Access Monitoring.
+
+## Teleport Access Graph
+
+Teleport Access Graph visualizes role-based access controls so you can detect overly permissive policies ([more info](/access-graph.mdx)):
+
+- [Discover AWS Access Patterns with Teleport Access Graph](/access-graph/aws-sync.mdx): Describes how to import and visualize AWS accounts access patterns using Teleport Access Graph.
+- [Teleport Access Graph](/access-graph/overview.mdx): A reference for Teleport Access Graph.
+- [Run Teleport Access Graph on Self-Hosted Clusters with Helm](/access-graph/self-hosted-helm.mdx): undefined
+- [Run Teleport Access Graph on Self-Hosted Clusters](/access-graph/self-hosted.mdx): Describes how to deploy Teleport Access Graph on self-hosted clusters.
+
+## Teleport Access Lists
+
+Teleport Access Lists provide increased access to a group of Teleport users for a period of time, with the option to renew the list after expiration ([more info](/access-lists.mdx)):
+
+- [Getting Started with Access Lists](/access-lists/guide.mdx): Learn how to use Access Lists to manage and audit long lived access to Teleport resources.
+- [Access Lists](/access-lists/overview.mdx): Use Access Lists in Teleport
+- [Access List Reference](/access-lists/reference.mdx): An explanation and overview of Access Lists in Teleport.
+
+## Access Request Plugins
+
+Teleport Access Request plugins allow you to manage Access Requests with your communicatino workflow of choice ([more info](/access-request-plugins.mdx)):
+
+- [Just-in-Time Access Request Plugins](/access-request-plugins/index.mdx): Use Teleport's Access Request plugins to least-privilege access without sacrificing productivity.
+- [Access Requests with Opsgenie](/access-request-plugins/opsgenie.mdx): How to set up Teleport's Opsgenie plugin for privilege elevation approvals.
+- [Just-in-Time Access Request Plugins](/access-request-plugins/overview.mdx): Use Teleport's Access Request plugins to least-privilege access without sacrificing productivity.
+- [Access Requests with ServiceNow](/access-request-plugins/servicenow.mdx): How to set up Teleport's ServiceNow plugin for privilege elevation approvals.
+- [Run the Discord Access Request Plugin](/access-request-plugins/ssh-approval-discord.mdx): How to set up Teleport's Discord plugin for privilege elevation approvals.
+- [Teleport Access Requests with Email](/access-request-plugins/ssh-approval-email.mdx): How to set up the Teleport email plugin to notify users when another user requests elevated privileges.
+- [Run the Jira Access Request Plugin](/access-request-plugins/ssh-approval-jira.mdx): How to set up the Teleport Jira plugin to notify users when another user requests elevated privileges.
+- [Run the Mattermost Access Request plugin](/access-request-plugins/ssh-approval-mattermost.mdx): How to set up Teleport's Mattermost plugin for privilege elevation approvals.
+- [Access Requests with Microsoft Teams](/access-request-plugins/ssh-approval-msteams.mdx): How to set up Teleport's Microsoft Teams plugin for privilege elevation approvals.
+- [Run the PagerDuty Access Request Plugin](/access-request-plugins/ssh-approval-pagerduty.mdx): How to set up Teleport's PagerDuty plugin for privilege elevation approvals.
+- [Run the Slack Access Request Plugin](/access-request-plugins/ssh-approval-slack.mdx): How to set up Teleport's Slack plugin for privilege elevation approvals.
+
+## Teleport Access Requests
+
+Teleport Access Requests provide just-in-time access to Teleport resources and roles ([more info](/access-requests.mdx)):
+
+- [Configure Access Requests](/access-requests/access-request-configuration.mdx): Describes the options available for configuring just-in-time access to roles and resources in your Teleport cluster.
+- [Teleport Community Edition Role Access Requests](/access-requests/oss-role-requests.mdx): Teleport Community Edition allows users to request access to roles from the CLI.
+- [Just-in-Time Access Requests](/access-requests/overview.mdx): Use just-in-time Access Requests to request elevated privileges.
+- [Resource Access Requests](/access-requests/resource-requests.mdx): Teleport allows users to request access to specific resources from the CLI or UI. Requests can be escalated via ChatOps or anywhere else via our flexible Authorization Workflow API.
+- [Role Access Requests](/access-requests/role-requests.mdx): Use Just-in-time Access Requests to request new roles with elevated privileges.
+
+## Teleport API Guides
+
+The Teleport Auth Service exposes a gRPC API for managing dynamic resources with custom workflows ([more info](/api.mdx)):
+
+- [How to Build an Access Request Plugin](/api/access-plugin.mdx): Manage Access Requests using custom workflows with the Teleport API
+- [API Architecture](/api/architecture.mdx): Architectural overview of the Teleport gRPC API.
+- [Automatically Register Resources with Teleport](/api/automatically-register-agents.mdx): Learn how to use the Teleport API to start agents automatically when you add resources to your infrastructure.
+- [API Getting Started Guide](/api/getting-started.mdx): Get started working with the Teleport API programmatically using Go.
+- [Teleport API Introduction](/api/introduction.mdx): Introduction to the Teleport gRPC API.
+- [Teleport Auth Service API](/api/overview.mdx): Introduction to the Teleport gRPC API.
+- [Generate Teleport Roles from an External RBAC System](/api/rbac.mdx): Use Teleport's API to automatically generate Teleport roles based on third-party RBAC policies
+
+## Auto-Discovery
+
+The Teleport Discovery Service can enroll resources in Teleport automatically by communicating with cloud APIs ([more info](/auto-discovery.mdx)):
+
+- [AWS Database Auto-Discovery](/auto-discovery/databases.mdx): How to configure Teleport to discover AWS-hosted databases.
+- [Teleport Auto-Discovery](/auto-discovery/introduction.mdx): Learn how to use the Teleport Discovery Service, which automatically enrolls resources by query APIs
+- [Teleport Auto-Discovery](/auto-discovery/overview.mdx): Learn how to use the Teleport Discovery Service, which automatically enrolls resources by query APIs
+- [Kubernetes Auto-Discovery](/auto-discovery/kubernetes.mdx): Automatically enroll Kubernetes clusters in Teleport.
+- [Automatically Enroll Kubernetes Applications](/auto-discovery/kubernetes-applications.mdx): Automatically enroll applications running as Kubernetes services in your Teleport cluster.
+- [Automatically enroll servers with Teleport](/auto-discovery/servers.mdx): The Teleport Discovery Service can automatically enroll servers with Teleport.
+
+## Day Two Operations
+
+Learn how to perform common tasks on an already running Teleport cluster ([more info](/day-two-operations.mdx)):
+
+- [Backup and Restore](/day-two-operations/backup-restore.mdx): How to back up and restore your Teleport cluster state.
+- [Cert Authority Rotation](/day-two-operations/ca-rotation.mdx): How to rotate Teleport's certificate authority
+- [Database CA Migrations](/day-two-operations/db-ca-migrations.mdx): How to complete Teleport Database CA migrations.
+- [Database Cert Authority Rotation](/day-two-operations/db-ca-rotation.mdx): How to rotate Teleport database certificate authorities
+- [Day Two Operations](/day-two-operations/overview.mdx): Provides instructions for completing common tasks on already running Teleport clusters
+- [Proxy Peering Migration](/day-two-operations/proxy-peering.mdx): How to upgrade an existing Teleport cluster to Proxy Peering mode.
+- [TLS Routing Migration](/day-two-operations/tls-routing.mdx): How to upgrade an existing Teleport cluster to single-port TLS routing mode
+- [Troubleshooting](/day-two-operations/troubleshooting.mdx): Troubleshooting and Collecting Metrics of Teleport Processes
+
+## Demo Teleport Clusters
+
+Learn how to run a demo Teleport cluster with Teleport Community Edition ([more info](/demos.mdx)):
+
+- [Try out Teleport Assist](/demos/ai-assist.mdx): This tutorial will guide you through the steps needed to run Teleport Assist on your own infrastructure.
+- [Get Started with Teleport](/demos/linux-server-demo.mdx): This tutorial will guide you through the steps needed to install and run Teleport on a Linux server
+- [Running a Demo Teleport Cluster](/demos/overview.mdx): Provides information on running Teleport in a demo environment
+- [Running Teleport with Self-Signed Certificates](/demos/self-signed-certs.mdx): This guide shows you how to run Teleport using self-signed certificates, which is helpful for testing or demo environments.
+
+## Teleport Device Trust
+
+Teleport Device Trust allows you to restrict Teleport logins to specific devices for greater security ([more info](/device-trust.mdx)):
+
+- [Manage Trusted Devices](/device-trust/device-management.mdx): Learn how to manage Trusted Devices
+- [Enforce Device Trust](/device-trust/enforcing-device-trust.mdx): Learn how to enforce trusted devices with Teleport
+- [Getting Started with Device Trust](/device-trust/guide.mdx): Get started with Teleport Device Trust
+- [Jamf Pro Integration](/device-trust/jamf-integration.mdx): Sync your Jamf Pro inventory into Teleport
+- [Device Trust](/device-trust/overview.mdx): Teleport Device Trust Concepts
+
+## Export Teleport Audit Events
+
+Learn how to export Teleport audit events to third-party tools in order to analyze activity within your Teleport cluster ([more info](/export-audit-events.mdx)):
+
+- [Export Teleport Audit Events with Datadog](/export-audit-events/datadog.mdx): How to configure the Teleport Event Handler plugin and Fluentd to send audit logs to Datadog
+- [Export Teleport Audit Events to the Elastic Stack](/export-audit-events/elastic-stack.mdx): How to configure Teleport's Event Handler plugin to send audit events to the Elastic Stack
+- [External Audit Storage](/export-audit-events/external-audit-storage.mdx): Store audit logs and session recordings on your own infrastructure with Teleport Enterprise Cloud.
+- [Export Events with Fluentd](/export-audit-events/fluentd.mdx): Forwarding events with Fluentd and Teleport event handler
+- [Exporting Teleport Audit Events](/export-audit-events/overview.mdx): Learn how to export Teleport audit events to your log management solution.
+- [Export Teleport Audit Events to Panther](/export-audit-events/panther.mdx): How to configure the Teleport Event Handler plugin and Fluentd to send audit logs to Panther
+- [Export Teleport Audit Events to Splunk](/export-audit-events/splunk.mdx): How to configure the Teleport Event Handler plugin to send audit logs to Splunk
+
+## Configure Teleport as an Identity Provider
+
+Learn how to set up Teleport as an identity provider so users can authenticate to third-party applications using Teleport identities ([more info](/idps.mdx)):
+
+- [Configuring Teleport as an identity provider](/idps/overview.mdx): How to set up Teleport's identity provider functionality
+- [SAML IdP Attribute Mapping](/idps/saml-attribute-mapping.mdx): How to map user attributes to custom SAML response
+- [Access GCP Web Console and API with a federated authentication.](/idps/saml-gcp-workforce-identity-federation.mdx): Manage Google Cloud Platform (GCP) web console access with Teleport SAMl IdP.
+- [Use Teleport's SAML Provider to authenticate with Grafana](/idps/saml-grafana.mdx): Configure Grafana to use identities provided by Teleport.
+- [Using Teleport as a SAML identity provider](/idps/saml-guide.mdx): How to configure and use Teleport as a SAML identity provider.
+- [SAML Identity Provider Reference](/idps/saml-reference.mdx): Reference documentation for the SAML identity provider
+
+## Infrastructure as Code
+
+Learn how to manage Teleport resources using Infrastructure as Code tools ([more info](/infrastructure-as-code.mdx)):
+
+- [Creating Access Lists with IaC](/infrastructure-as-code/access-list.mdx): Use Infrastructure-as-Code tooling to create Teleport AccessLists.
+- [Registering Agentless OpenSSH Servers with IaC](/infrastructure-as-code/agentless-ssh-servers.mdx): Use infrastructure-as-code tooling to register Agentless OpenSSH servers in Teleport.
+- [Using Infrastructure as Code](/infrastructure-as-code/overview.mdx): An introduction to Teleport's dynamic resources, which make it possible to apply settings to remote clusters using infrastructure as code.
+- [Kubernetes Operator in teleport-cluster Helm chart](/infrastructure-as-code/teleport-operator-helm.mdx): Deploy the operator alongside your Helm-deployed Teleport Cluster.
+- [Standalone Kubernetes Operator](/infrastructure-as-code/teleport-operator-standalone.mdx): Run a standalone operator against a remote Teleport cluster such as Teleport Cloud.
+- [Teleport Kubernetes Operator](/infrastructure-as-code/teleport-operator.mdx): Easily manage Teleport resources from Kubernetes
+- [Set up the Teleport Terraform Provider](/infrastructure-as-code/terraform-provider.mdx): How to manage dynamic resources using the Teleport Terraform provider.
+- [Managing Users And Roles With IaC](/infrastructure-as-code/user-and-role.mdx): Use infrastructure-as-code tooling to create Teleport users and roles.
+
+## Installing Teleport
+
+Learn how to manage a Teleport installation ([more info](/install.mdx)):
+
+- [Run Teleport as a Daemon](/install/daemon.mdx): Configure Teleport to run as a daemon using systemd
+- [Installing Teleport](/install/install-teleport.mdx): How to install Teleport and Teleport's client tools on your platform, including binaries and instructions for Docker and Helm.
+- [Installing Teleport](/install/overview.mdx): Provides information on installing Teleport and keeping your Teleport installations up to date.
+- [Uninstall Teleport](/install/uninstall-teleport.mdx): How to remove Teleport from your system
+
+## Login Rules
+
+When a user logs in to Teleport with a Single Sign-On provider, Login Rules dynamically set traits for the user ([more info](/login-rules.mdx)):
+
+- [Set Up Login Rules](/login-rules/guide.mdx): Set up Login Rules to transform user traits
+- [Deploy Login Rules using Kubernetes Operator](/login-rules/kubernetes.mdx): Use Teleport's Kubernetes Operator to deploy Login Rules to your cluster
+- [Login Rules](/login-rules/overview.mdx): Transform User Traits with Login Rules
+- [Login Rules Reference](/login-rules/reference.mdx): Reference documentation for Login Rules
+- [Deploy Login Rules via Terraform](/login-rules/terraform.mdx): Use Teleport's Terraform Provider to deploy Login Rules to your cluster
+
+## Machine ID
+
+Learn how to provide secure access to infrastructure resources from bots and service accounts ([more info](/machine-id.mdx)):
+
+- [Machine ID Architecture](/machine-id/architecture.mdx): How Teleport Machine ID works.
+- [Machine ID FAQ](/machine-id/faq.mdx): Frequently asked questions about Teleport Machine ID
+- [Machine ID Getting Started Guide](/machine-id/getting-started.mdx): Getting started with Teleport Machine ID
+- [Machine ID](/machine-id/introduction.mdx): Teleport Machine ID introduction, demo and resources.
+- [Machine ID Manifesto](/machine-id/manifesto.mdx): A manifesto for Machine Identity
+- [Machine ID](/machine-id/overview.mdx): Teleport Machine ID introduction, demo and resources.
+- [Machine ID Troubleshooting Guide](/machine-id/troubleshooting.mdx): Troubleshooting common issues with Machine ID
+- [Machine ID Access Guides](/machine-id/access-guides.mdx): Learn how to configure a Machine ID Bot to access resources in your infrastructure.
+- [Machine ID Deployment Guides](/machine-id/deployment.mdx): Learn how to deploy the `tbot` binary on your platform of choice.
+- [Machine ID Reference](/machine-id/reference.mdx): Configuration fields and commands related to Machine ID.
+- [Workload Identity](/machine-id/workload-identity.mdx): Provide secure access to specific workloads using Teleport.
+
+## Protect Infrastructure Resources with Teleport
+
+Learn how to enroll servers, databases, and other infrastructure resources in your Teleport cluster ([more info](/protect-resources.mdx)):
+
+- [Teleport Agents Overview](/protect-resources/agents.mdx): Deploy agents to enroll resources in your infrastructure with Teleport. You can run multiple Teleport services per agent."
+- [Deploy Teleport Agents with Terraform](/protect-resources/deploy-agents-terraform.mdx): In this guide, we will show you how to deploy a pool of Teleport agents so you can apply dynamic resources to enroll your infrastructure with Teleport.
+- [Protect Infrastructure Resources with Teleport](/protect-resources/overview.mdx): Provides instructions for enrolling servers, Kubernetes clusters, databases, applications, and Windows desktops in your Teleport cluster.
+- [Protect Applications with Teleport](/protect-resources/application-access.mdx): Run the Teleport Application Service to enable secure access to applications.
+- [Protect Databases with Teleport](/protect-resources/database-access.mdx): How to enrolls databases in your Teleport cluster for secure access.
+- [Protect Desktops with Teleport](/protect-resources/desktop-access.mdx): Enroll Windows Desktops in your Teleport cluster for secure acces.
+- [Join Services to your Cluster](/protect-resources/join-services-to-your-cluster.mdx): Methods for establishing trust between Teleport services and the Teleport Auth Service.
+- [Protect Kubernetes Clusters with Teleport](/protect-resources/kubernetes-access.mdx): Enroll Kubernetes clusters in your Teleport cluster for secure acces.
+- [Protect SSH Servers with Teleport](/protect-resources/server-access.mdx): Enroll SSH servers in your Teleport cluster for secure acces.
+
+## Teleport RBAC Guides
+
+Learn how to use Teleport role-based access controls ([more info](/rbac.mdx)):
+
+- [Dual Authorization](/rbac/dual-authz.mdx): Dual Authorization for SSH and Kubernetes.
+- [EC2 Tags as Teleport Node Labels](/rbac/ec2-tags.mdx): How to set up Teleport Node labels based on EC2 tags
+- [Getting Started With Access Controls](/rbac/getting-started.mdx): Get started using Teleport Access Controls.
+- [Hardware Key Support](/rbac/hardware-key-support.mdx): Hardware Key Support
+- [Headless WebAuthn](/rbac/headless.mdx): Headless WebAuthn
+- [Impersonating Teleport Users](/rbac/impersonation.mdx): How to issue short-lived certs on behalf of Teleport users using impersonation.
+- [IP Pinning ](/rbac/ip-pinning.mdx): How to enable IP pinning for Teleport users
+- [Add Labels to Resources](/rbac/labels.mdx): How to assign static and command-based dynamic labels to Teleport resources.
+- [Session and Identity Locking](/rbac/locking.mdx): How to lock compromised users or agents
+- [MFA for Administrative Actions](/rbac/mfa-for-admin-actions.mdx): Require MFA checks to perform administrative actions.
+- [Moderated Sessions](/rbac/moderated-sessions.mdx): Describes the purpose of moderated sessions and how to configure roles to support moderated sessions in a Teleport cluster.
+- [Cluster Access and RBAC](/rbac/overview.mdx): How to configure access to specific resources in your infrastructure or your Teleport cluster as a whole.
+- [Passwordless](/rbac/passwordless.mdx): Learn how to use passwordless authentication with Teleport.
+- [Per-session MFA](/rbac/per-session-mfa.mdx): Require MFA checks to initiate sessions.
+- [Teleport Role Templates](/rbac/role-templates.mdx): This guide explains templating in Teleport roles. Templates allow you to enable access to resources depending on the traits of a local or single sign-on user.
+- [Configure Trusted Clusters](/rbac/trustedclusters.mdx): Explains how you can configure a trust relationship and manage access between two Teleport clusters.
+- [Local Users](/rbac/users.mdx): Learn how to manage local users in Teleport. Local users are stored on the Auth Service instead of a third-party identity provider.
+- [Second Factor: WebAuthn](/rbac/webauthn.mdx): Configuring WebAuthn support in Teleport clusters.
+
+## Self-Hosted Teleport
+
+Learn how to deploy a self-hosted Teleport cluster ([more info](/self-hosted-teleport.mdx)):
+
+- [Teleport High Availability mode on AWS](/self-hosted-teleport/aws-ha-autoscale-cluster-terraform.mdx): How to configure Teleport in High Availability mode for AWS deployments.
+- [Teleport Single-Instance Deployment on AWS](/self-hosted-teleport/aws-starter-cluster-terraform.mdx): How to quickly configure Teleport on a single instance for testing in AWS.
+- [Self-Hosting Teleport](/self-hosted-teleport/overview.mdx): Provides guides to hosting your own Teleport cluster
+- [Scaling](/self-hosted-teleport/scaling.mdx): How to configure Teleport for large-scale deployments
+- [Use Teleport with a Custom Key Management System](/self-hosted-teleport/custom-kms.mdx): Get control over the private key material that the Teleport Auth Service uses to sign certificates with a custom KMS.
+- [Deploy Self-Hosted Teleport with Helm](/self-hosted-teleport/helm-deployments.mdx): Learn how to use the `teleport-cluster` Helm chart on your cloud provider.
+
+## Set up Single Sign-On with Teleport
+
+Allow Teleport users to authenticate with a Single Sign-On provider like Okta or GitHub ([more info](/sso.mdx)):
+
+- [SSO with Active Directory Federation Services](/sso/adfs.mdx): How to configure Teleport access with Active Directory Federation Services
+- [Teleport Authentication with Azure Active Directory (AD)](/sso/azuread.mdx): How to configure Teleport access with Azure Active Directory.
+- [Set up Single Sign-On with GitHub](/sso/github-sso.mdx): Setting up GitHub SSO
+- [Authentication With GitLab as an SSO provider](/sso/gitlab.mdx): How to configure Teleport access using GitLab for SSO
+- [Teleport Authentication with Google Workspace (G Suite)](/sso/google-workspace.mdx): How to configure Teleport access with Google Workspace (formerly known as G Suite)
+- [OAuth2 and OIDC authentication](/sso/oidc.mdx): How to configure Teleport access with OAuth2 or OpenID connect (OIDC)
+- [Authentication With Okta as an SSO Provider](/sso/okta.mdx): How to configure Teleport access using Okta for SSO
+- [Teleport Authentication with OneLogin as an SSO Provider](/sso/one-login.mdx): How to configure Teleport access using OneLogin as an SSO provider
+- [Configure Single Sign-On](/sso/overview.mdx): How to set up single sign-on (SSO) for SSH using Teleport
+
+## Upgrading Teleport
+
+Learn how to upgrade your Teleport cluster ([more info](/upgrading.mdx)):
+
+- [Upgrade Teleport Cloud Agents on Kubernetes](/upgrading/cloud-kubernetes.mdx): Provides instructions for upgrading Teleport Cloud agents that run on Kubernetes.
+- [Upgrade Teleport Cloud Agents on Linux](/upgrading/cloud-linux.mdx): Provides instructions for upgrading Teleport Cloud agents that run on Linux servers.
+- [Upgrading Teleport](/upgrading/overview.mdx): Explains how to upgrade Teleport depending on your environment and edition.
+- [Set up Automatic Agent Upgrades](/upgrading/self-hosted-automatic-agent-updates.mdx): Describes how to set up automatic agent upgrades for self-hosted Teleport deployments.
+- [Upgrade Self-Hosted Teleport Clusters on Kubernetes](/upgrading/self-hosted-kubernetes.mdx): Provides instructions for upgrading self-hosted Teleport clusters that run on Kubernetes.
+- [Upgrade Self-Hosted Teleport Clusters on Linux](/upgrading/self-hosted-linux.mdx): Provides instructions for upgrading self-hosted Teleport clusters that run on Linux servers.
