@@ -8,30 +8,30 @@ undefined*/}
 
 Learn how to deploy a self-hosted Teleport cluster.
 
-- [Teleport High Availability mode on AWS](aws-ha-autoscale-cluster-terraform.mdx): How to configure Teleport in High Availability mode for AWS deployments.
-- [Teleport Single-Instance Deployment on AWS](aws-starter-cluster-terraform.mdx): How to quickly configure Teleport on a single instance for testing in AWS.
-- [Self-Hosting Teleport](overview.mdx): Provides guides to hosting your own Teleport cluster
-- [Scaling](scaling.mdx): How to configure Teleport for large-scale deployments
+- [Teleport High Availability mode on AWS](self-hosted-teleport/aws-ha-autoscale-cluster-terraform.mdx): How to configure Teleport in High Availability mode for AWS deployments.
+- [Teleport Single-Instance Deployment on AWS](self-hosted-teleport/aws-starter-cluster-terraform.mdx): How to quickly configure Teleport on a single instance for testing in AWS.
+- [Self-Hosting Teleport](self-hosted-teleport/overview.mdx): Provides guides to hosting your own Teleport cluster
+- [Scaling](self-hosted-teleport/scaling.mdx): How to configure Teleport for large-scale deployments
 
 ## Use Teleport with a Custom Key Management System
 
-Get control over the private key material that the Teleport Auth Service uses to sign certificates with a custom KMS ([more info](custom-kms.mdx)):
+Get control over the private key material that the Teleport Auth Service uses to sign certificates with a custom KMS ([more info](self-hosted-teleport/custom-kms.mdx)):
 
-- [AWS KMS](custom-kms/aws-kms.mdx): Configure Teleport to store CA private keys in the AWS Key Management Service
-- [Google Cloud KMS](custom-kms/gcp-kms.mdx): Configure Teleport to store CA private keys in the Google Cloud Key Management Service
-- [HSM Support](custom-kms/hsm.mdx): How to configure Hardware Security Modules to manage your Teleport CA private keys
-- [Running Teleport with a Key Management Service](custom-kms/overview.mdx): Use your own key management service to sign certificates that Teleport uses to connect to infrastructure resources.
+- [AWS KMS](self-hosted-teleport/custom-kms/aws-kms.mdx): Configure Teleport to store CA private keys in the AWS Key Management Service
+- [Google Cloud KMS](self-hosted-teleport/custom-kms/gcp-kms.mdx): Configure Teleport to store CA private keys in the Google Cloud Key Management Service
+- [HSM Support](self-hosted-teleport/custom-kms/hsm.mdx): How to configure Hardware Security Modules to manage your Teleport CA private keys
+- [Running Teleport with a Key Management Service](self-hosted-teleport/custom-kms/overview.mdx): Use your own key management service to sign certificates that Teleport uses to connect to infrastructure resources.
 
 ## Deploy Self-Hosted Teleport with Helm
 
-Learn how to use the `teleport-cluster` Helm chart on your cloud provider ([more info](helm-deployments.mdx)):
+Learn how to use the `teleport-cluster` Helm chart on your cloud provider ([more info](self-hosted-teleport/helm-deployments.mdx)):
 
-- [Running an HA Teleport cluster using AWS, EKS, and Helm](helm-deployments/aws.mdx): Install and configure an HA Teleport cluster using an AWS EKS cluster
-- [Running an HA Teleport cluster using Microsoft Azure, AKS, and Helm](helm-deployments/azure.mdx): Install and configure an HA Teleport cluster using a Microsoft Azure AKS cluster.
-- [Running Teleport with a Custom Configuration using Helm](helm-deployments/custom.mdx): Install and configure a Teleport cluster with a custom configuration using Helm
-- [Get started with Teleport on DigitalOcean Kubernetes](helm-deployments/digitalocean.mdx): How to get started with Teleport on DigitalOcean Kubernetes
-- [Running an HA Teleport cluster using GCP, GKE, and Helm](helm-deployments/gcp.mdx): Install and configure an HA Teleport cluster using a Google Cloud GKE cluster.
-- [Deploy Teleport on Kubernetes](helm-deployments/kubernetes-cluster.mdx): This guide shows you how to deploy Teleport on a Kubernetes cluster using Helm.
-- [Kubernetes 1.25 and PSP removal](helm-deployments/migration-kubernetes-1-25-psp.mdx): How to prepare for the PodSecurityPolicy removal happening in Kubernetes 1.25
-- [Migrating to teleport-cluster v12](helm-deployments/migration-v12.mdx): How to upgrade to teleport-cluster Helm chart version 12
-- [Guides for running Teleport using Helm](helm-deployments/overview.mdx): How to install and configure Teleport in Kubernetes using Helm
+- [Running an HA Teleport cluster using AWS, EKS, and Helm](self-hosted-teleport/helm-deployments/aws.mdx): Install and configure an HA Teleport cluster using an AWS EKS cluster
+- [Running an HA Teleport cluster using Microsoft Azure, AKS, and Helm](self-hosted-teleport/helm-deployments/azure.mdx): Install and configure an HA Teleport cluster using a Microsoft Azure AKS cluster.
+- [Running Teleport with a Custom Configuration using Helm](self-hosted-teleport/helm-deployments/custom.mdx): Install and configure a Teleport cluster with a custom configuration using Helm
+- [Get started with Teleport on DigitalOcean Kubernetes](self-hosted-teleport/helm-deployments/digitalocean.mdx): How to get started with Teleport on DigitalOcean Kubernetes
+- [Running an HA Teleport cluster using GCP, GKE, and Helm](self-hosted-teleport/helm-deployments/gcp.mdx): Install and configure an HA Teleport cluster using a Google Cloud GKE cluster.
+- [Deploy Teleport on Kubernetes](self-hosted-teleport/helm-deployments/kubernetes-cluster.mdx): This guide shows you how to deploy Teleport on a Kubernetes cluster using Helm.
+- [Kubernetes 1.25 and PSP removal](self-hosted-teleport/helm-deployments/migration-kubernetes-1-25-psp.mdx): How to prepare for the PodSecurityPolicy removal happening in Kubernetes 1.25
+- [Migrating to teleport-cluster v12](self-hosted-teleport/helm-deployments/migration-v12.mdx): How to upgrade to teleport-cluster Helm chart version 12
+- [Guides for running Teleport using Helm](self-hosted-teleport/helm-deployments/overview.mdx): How to install and configure Teleport in Kubernetes using Helm
