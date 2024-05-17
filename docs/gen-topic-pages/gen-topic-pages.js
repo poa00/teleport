@@ -64,6 +64,15 @@ ${fm.description}
     return fm;
   }
 
+  // relativePathToFile takes a filepath and returns a path we can use in links
+  // to the file in a table of contents page. The link path is a relative path
+  // to the directory where we are placing the table of contents page.
+  // @param filepath {string} - the path from which to generate a link path.
+  relativePathToFile(filepath) {
+    const rootName = path.parse(this.root).name;
+    return path.join(rootName, filepath.slice(this.root.length))
+  }
+
   // addTopicsFromDir takes the path at dirPath and recursively adds any topic
   // listings to the string sofar. Returns the new string.
   // @param dirPath {string} - path to the directory to use for generating part
@@ -128,7 +137,7 @@ ${fm.description}
 
     // Add rows to the table.
     Object.keys(mdxFiles).forEach(f => {
-      let relPath = path.relative(this.root, f);
+      let relPath = this.relativePathToFile(f);
       const fm = this.getFrontmatter(f);
 
       // We're using a YAML file for directory information, so change the link
@@ -166,7 +175,7 @@ ${fm.description}
         newText +
         `${heading} ${fm.title}
 
-${moreInfoDescription} ([more info](${path.relative(this.root, p) + '.mdx'})):
+${moreInfoDescription} ([more info](${this.relativePathToFile(p) + '.mdx'})):
 
 `;
       if (level <= maxLevel) {
