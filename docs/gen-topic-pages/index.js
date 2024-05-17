@@ -11,11 +11,7 @@ const args = yargs(hideBin(process.argv))
     describe:
       'Comma-separated list of root directory paths from which to generate topic page partials. We expect each root directory to include the output in a page called "all-topics.mdx"',
   })
-  .option('out', {
-    describe:
-      'Relative path to a directory in which to place topic page partials, which are named after their corresponding root input directories. For example, use "docs/pages/includes/topic-pages.',
-  })
-  .demandOption(['in', 'out'])
+  .demandOption(['in'])
   .help()
   .parse();
 
@@ -36,5 +32,5 @@ const addTopicsForDir = (dirPath, command) => {
 args.in.split(',').forEach(p => {
   const command =
     'node docs/gen-topic-pages/index.js ' + hideBin(process.argv).join(' ');
-  addTopicsForDir(args.in);
+  addTopicsForDir(p);
 });
