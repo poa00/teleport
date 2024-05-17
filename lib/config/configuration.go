@@ -242,6 +242,10 @@ type CommandLineFlags struct {
 	// `teleport integration configure access-graph aws-iam` command
 	IntegrationConfAccessGraphAWSSyncArguments IntegrationConfAccessGraphAWSSync
 
+	// IntegrationConfAzureOIDCArguments contains the arguments of
+	// `teleport integration configure azure-oidc` command
+	IntegrationConfAzureOIDCArguments IntegrationConfAzureOIDC
+
 	// IntegrationConfSAMLIdPGCPWorkforceArguments contains the arguments of
 	// `teleport integration configure samlidp gcp-workforce` command
 	IntegrationConfSAMLIdPGCPWorkforceArguments samlidpconfig.GCPWorkforceAPIParams
@@ -261,6 +265,19 @@ type CommandLineFlags struct {
 type IntegrationConfAccessGraphAWSSync struct {
 	// Role is the AWS Role associated with the Integration
 	Role string
+}
+
+// IntegrationConfAzureOIDC contains the arguments of
+// `teleport integration configure azure-oidc` command
+type IntegrationConfAzureOIDC struct {
+	// OIDCIssuer is the URL for the OIDC Issuer
+	// in the federated credential of the enterprise application that will be created.
+	OIDCIssuer string
+
+	// AccessGraph is a flag indicating that access graph integration is requested.
+	// When this is true, the integration script will produce
+	// a cache file necessary for TAG synchronization.
+	AccessGraph bool
 }
 
 // IntegrationConfDeployServiceIAM contains the arguments of
