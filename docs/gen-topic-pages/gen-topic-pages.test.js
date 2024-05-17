@@ -55,7 +55,7 @@ Guides related to Database Access.
       fs,
       '/docs/database-access'
     );
-    const actual = frag.makeTopicTree();
+    const actual = frag.makeTopicPage();
     expect(actual).toBe(expected);
   });
 
@@ -94,7 +94,7 @@ description: "Protecting DB 2 with Teleport"
       fs,
       '/docs/database-access'
     );
-    const actual = frag.makeTopicTree();
+    const actual = frag.makeTopicPage();
     expect(actual).toBe(expected);
   });
 
@@ -142,7 +142,7 @@ description: "Protecting DB 2 with Teleport"
       fs,
       '/docs/database-access'
     );
-    const actual = frag.makeTopicTree();
+    const actual = frag.makeTopicPage();
     expect(actual).toBe(expected);
   });
 
@@ -185,7 +185,7 @@ description: "Protecting App 2 with Teleport"
     });
     const fs = createFsFromVolume(vol);
     const frag = new TopicContentsFragment('sample-command', fs, '/docs');
-    const actual = frag.makeTopicTree();
+    const actual = frag.makeTopicPage();
     expect(actual).toBe(expected);
   });
 
@@ -218,7 +218,7 @@ Guides related to Database Access ([more info](database-access.mdx)):
     const vol = Volume.fromJSON(testFilesTwoSections);
     const fs = createFsFromVolume(vol);
     const frag = new TopicContentsFragment('sample-command', fs, '/docs');
-    const actual = frag.makeTopicTree();
+    const actual = frag.makeTopicPage();
     expect(actual).toBe(expected);
   });
 
@@ -274,7 +274,7 @@ description: "Protecting JWT App 2 with Teleport"
     });
     const fs = createFsFromVolume(vol);
     const frag = new TopicContentsFragment('sample-command', fs, '/docs');
-    const actual = frag.makeTopicTree();
+    const actual = frag.makeTopicPage();
     expect(actual).toBe(expected);
   });
 });
