@@ -115,7 +115,7 @@ func newTestPack(t *testing.T, ctx context.Context, appProvider AppProvider) *te
 	tcpHandlerResolver := NewTCPAppResolver(appProvider)
 
 	// Create the VNet and connect it to the other side of the TUN.
-	ns, err := NewNetworkStack(&Config{
+	ns, err := newNetworkStack(&Config{
 		TUNDevice:                tun2,
 		IPv6Prefix:               vnetIPv6Prefix,
 		DNSIPv6:                  dnsIPv6,
