@@ -30,7 +30,7 @@ class TopicContentsFragment {
   // "guides", we expect a menu page called "guides.mdx". We use this to
   // provide context for the subdirectory in the table of contents.
   makeTopicTree() {
-    const initial = `{/*GENERATED PARTIAL. DO NOT EDIT. RECREATE WITH THIS COMMAND:
+    const initial = `{/*GENERATED FILE. DO NOT EDIT. RECREATE WITH THIS COMMAND:
 ${this.command}*/}
 
 `;
