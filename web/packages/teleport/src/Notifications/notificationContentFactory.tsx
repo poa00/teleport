@@ -87,7 +87,7 @@ type NotificationContentRedirect = NotificationContentBase & {
   QuickAction?: (props: QuickActionProps) => JSX.Element;
 };
 
-export type QuickActionProps = { markAsClicked: () => void };
+export type QuickActionProps = { markAsClicked: () => Promise<any> };
 
 /** For notifications that only contain text and are not interactive in any other way. This is used for user-created notifications. */
 type NotificationContentText = NotificationContentBase & {

@@ -54,9 +54,11 @@ import { View } from './Notifications';
 export function Notification({
   notification,
   view = 'All',
+  closeNotificationsList,
 }: {
   notification: NotificationType;
   view?: View;
+  closeNotificationsList: () => void;
 }) {
   const ctx = useTeleport();
   const { clusterId } = useStickyClusterId();
@@ -125,6 +127,7 @@ export function Notification({
         setShowTextContentDialog(true);
         return;
       }
+      closeNotificationsList();
       history.push(content.redirectRoute);
     }
   }

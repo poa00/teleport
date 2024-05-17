@@ -169,7 +169,12 @@ export function Notifications({ iconSize = 24 }: { iconSize?: number }) {
           <>
             {!!notifications.length &&
               notifications.map(notif => (
-                <Notification notification={notif} key={notif.id} view={view} />
+                <Notification
+                  notification={notif}
+                  key={notif.id}
+                  view={view}
+                  closeNotificationsList={() => setOpen(false)}
+                />
               ))}
             {open && <div ref={setTrigger} />}
             {attempt.status === 'processing' && (
