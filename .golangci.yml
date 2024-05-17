@@ -93,10 +93,9 @@ linters-settings:
           # TODO(tross): enable linting tsh once it no longer depends on lib/auth
           #- '**/tool/tsh/**'
           - '**/lib/client/**'
+          - '**lib/services/**'
           - '**/lib/service/servicecfg/**'
           - '**/lib/reversetunnelclient/**'
-        allow:
-          - github.com/gravitational/teleport/lib/cloud/imds$
         deny:
           - pkg: github.com/gravitational/teleport/lib/auth$
             desc: 'lib/auth should not be imported by to prevent increasing binary size, prefer lib/auth/authclient instead'
@@ -104,21 +103,7 @@ linters-settings:
             desc: 'lib/cloud should not be imported by to prevent increasing binary size'
           - pkg: github.com/gravitational/teleport/lib/srv$
             desc: 'lib/srv prevents client tools from build on non-linux platforms'
-      # TODO(tross): move this into the block above when the remaining lib/cloud references are removed from lib/services.
-      services:
-        files:
-          # Tests can do anything
-          - "!$test"
-          - '**/lib/services/**'
-        allow:
-          - github.com/gravitational/teleport/lib/cloud/imds$
-        deny:
-          - pkg: github.com/gravitational/teleport/lib/auth$
-            desc: 'lib/auth should not be imported by to prevent increasing binary size, prefer lib/auth/authclient instead'
-          - pkg: github.com/gravitational/teleport/lib/cloud/gcp
-            desc: 'lib/cloud should not be imported by to prevent increasing binary size'
-          - pkg: github.com/gravitational/teleport/lib/srv$
-            desc: 'lib/srv prevents client tools from build on non-linux platforms'
+
   errorlint:
     comparison: true
     asserts: true
