@@ -19,12 +19,22 @@ const args = yargs(hideBin(process.argv))
   .help()
   .parse();
 
+const addTopicsForDir = (dirPath, command) => {
+  const frag = new TopicContentsFragment(command, fs, dirPath, '');
+  const parts = path.parse(dirPath);
+  const newPath = path.join(parts.dir, parts.name + '.mdx');
+  fs.writeFileSync(newPath, frag.makeTopicTree());
+
+  fs.readdirSync(dirPath).forEach(filePath => {
+    const stats = fs.statSync(filePath);
+    if (stats.isDirectory()) {
+      addTopicsForDir(filePath);
+    }
+  });
+};
+
 args.in.split(',').forEach(p => {
   const command =
     'node docs/gen-topic-pages/index.js ' + hideBin(process.argv).join(' ');
-  const prefix = path.relative(args.out, p);
-  const frag = new TopicContentsFragment(command, fs, p, prefix);
-  const parts = path.parse(p);
-  const newPath = path.join(args.out, parts.name + '.mdx');
-  fs.writeFileSync(newPath, frag.makeTopicTree());
+  addTopicsForDir(args.in);
 });
