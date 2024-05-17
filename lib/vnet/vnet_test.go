@@ -110,7 +110,7 @@ func newTestPack(t *testing.T, ctx context.Context, appProvider AppProvider) *te
 		NIC:         nicID,
 	}})
 
-	dnsIPv6 := ipv6WithSuffix(vnetIPv6Prefix, []byte{2})
+	dnsIPv6 := Ipv6WithSuffix(vnetIPv6Prefix, []byte{2})
 
 	tcpHandlerResolver := NewTCPAppResolver(appProvider)
 

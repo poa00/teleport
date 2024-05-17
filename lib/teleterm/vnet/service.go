@@ -24,6 +24,7 @@ import (
 	"sync"
 
 	"github.com/gravitational/trace"
+	"golang.org/x/sync/errgroup"
 
 	"github.com/gravitational/teleport"
 	"github.com/gravitational/teleport/api/types"
@@ -60,7 +61,7 @@ type Service struct {
 	// that moment.
 	stopErrC chan error
 	// cancel stops the VNet instance running in a separate goroutine.
-	cancel context.CancelCauseFunc
+	cancel context.CancelFunc
 }
 
 // New creates an instance of Service.
@@ -105,14 +106,37 @@ func (s *Service) Start(ctx context.Context, req *api.StartRequest) (*api.StartR
 		return &api.StartResponse{}, nil
 	}
 
-	longCtx, cancelLongCtx := context.WithCancelCause(context.Background())
+	socket, socketPath, err := vnet.CreateSocket(ctx)
+	if err != nil {
+		return nil, trace.Wrap(err)
+	}
+
+	longCtx, cancelLongCtx := context.WithCancel(context.Background())
 	s.cancel = cancelLongCtx
 	defer func() {
 		// If by the end of this RPC the service is not running, make sure to cancel the long context.
 		if s.status != statusRunning {
-			cancelLongCtx(nil)
+			cancelLongCtx()
 		}
 	}()
+
+	g, longCtx := errgroup.WithContext(longCtx)
+
+	g.Go(func() error {
+		<-longCtx.Done()
+
+		return trace.Wrap(socket.Close())
+	})
+
+	ipv6Prefix, err := vnet.IPv6Prefix()
+	if err != nil {
+		return nil, trace.Wrap(err)
+	}
+	dnsIPv6 := vnet.Ipv6WithSuffix(ipv6Prefix, []byte{2})
+
+	g.Go(func() error {
+		return trace.Wrap(vnet.ExecAdminSubcommand(longCtx, socketPath, ipv6Prefix.String(), dnsIPv6.String()))
+	})
 
 	appProvider := &appProvider{
 		daemonService:      s.cfg.DaemonService,
@@ -120,15 +144,19 @@ func (s *Service) Start(ctx context.Context, req *api.StartRequest) (*api.StartR
 		insecureSkipVerify: s.cfg.InsecureSkipVerify,
 	}
 
-	manager, adminCommandErrCh, err := vnet.Setup(ctx, longCtx, appProvider)
+	manager, err := vnet.Setup(ctx, appProvider, socket, ipv6Prefix, dnsIPv6)
 	if err != nil {
 		return nil, trace.Wrap(err)
 	}
 
+	g.Go(func() error {
+		return trace.Wrap(manager.Run(longCtx))
+	})
+
 	s.stopErrC = make(chan error, 1)
 
 	go func() {
-		err := vnet.Run(longCtx, cancelLongCtx, manager, adminCommandErrCh)
+		err := g.Wait()
 		if err != nil && !errors.Is(err, context.Canceled) {
 			log.ErrorContext(longCtx, "VNet closed with an error", "error", err)
 			s.stopErrC <- err
@@ -143,7 +171,6 @@ func (s *Service) Start(ctx context.Context, req *api.StartRequest) (*api.StartR
 		defer s.mu.Unlock()
 
 		s.status = statusNotRunning
-		cancelLongCtx(nil)
 	}()
 
 	s.status = statusRunning
@@ -183,7 +210,7 @@ func (s *Service) stopLocked() error {
 		return nil
 	}
 
-	s.cancel(nil)
+	s.cancel()
 	s.status = statusNotRunning
 
 	return trace.Wrap(<-s.stopErrC)

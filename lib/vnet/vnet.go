@@ -439,7 +439,7 @@ func (m *Manager) assignTCPHandler(handler TCPHandler, fqdn string) (tcpip.Addre
 	m.state.lastAssignedIPSuffix++
 	ipSuffix := m.state.lastAssignedIPSuffix
 
-	addr := ipv6WithSuffix(m.ipv6Prefix, u32ToBytes(ipSuffix))
+	addr := Ipv6WithSuffix(m.ipv6Prefix, u32ToBytes(ipSuffix))
 
 	m.state.tcpHandlers[addr] = handler
 	m.state.appIPs[fqdn] = addr
@@ -663,7 +663,7 @@ func protocolVersion(b byte) (tcpip.NetworkProtocolNumber, bool) {
 	return 0, false
 }
 
-func ipv6WithSuffix(prefix tcpip.Address, suffix []byte) tcpip.Address {
+func Ipv6WithSuffix(prefix tcpip.Address, suffix []byte) tcpip.Address {
 	addrBytes := prefix.As16()
 	offset := len(addrBytes) - len(suffix)
 	for i, b := range suffix {
