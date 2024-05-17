@@ -154,8 +154,8 @@ type TUNDevice interface {
 	Close() error
 }
 
-// Manager holds configuration and state for the VNet.
-type Manager struct {
+// NetworkStack holds configuration and state for the VNet.
+type NetworkStack struct {
 	// stack is the gVisor networking stack.
 	stack *stack.Stack
 
@@ -183,13 +183,13 @@ type Manager struct {
 
 	// destroyed is a channel that will be closed when the VNet is in the process of being destroyed.
 	// All goroutines should terminate quickly after either this is closed or the context passed to
-	// [Manager.Run] is canceled.
+	// [NetworkStack.Run] is canceled.
 	destroyed chan struct{}
-	// wg is a [sync.WaitGroup] that keeps track of all running goroutines started by the [Manager].
+	// wg is a [sync.WaitGroup] that keeps track of all running goroutines started by the [NetworkStack].
 	wg sync.WaitGroup
 
-	// state holds all mutable state for the Manager, it is currently protect by a single RWMutex, this could
-	// be optimized as necessary.
+	// state holds all mutable state for the NetworkStack, it is currently protect by a single
+	// RWMutex, this could be optimized as necessary.
 	state state
 
 	slog *slog.Logger
@@ -213,12 +213,10 @@ func newState() state {
 	}
 }
 
-// NewManager creates a new VNet manager with the given configuration and root
-// context. Call Run() on the returned manager to start the VNet.
-// NewManager creates a new VNet manager with the given configuration and root context. It takes ownership of
-// [cfg.TUNDevice] and will handle closing it before Run() returns. Call Run() on the returned manager to
-// start the VNet.
-func NewManager(cfg *Config) (*Manager, error) {
+// NewNetworkStack creates a new VNet network stack with the given configuration and root context.
+// It takes ownership of [cfg.TUNDevice] and will handle closing it before Run() returns. Call Run()
+// on the returned network stack to start the VNet.
+func NewNetworkStack(cfg *Config) (*NetworkStack, error) {
 	if err := cfg.CheckAndSetDefaults(); err != nil {
 		return nil, trace.Wrap(err)
 	}
@@ -233,7 +231,7 @@ func NewManager(cfg *Config) (*Manager, error) {
 		return nil, trace.Wrap(err)
 	}
 
-	m := &Manager{
+	m := &NetworkStack{
 		tun:                cfg.TUNDevice,
 		stack:              stack,
 		linkEndpoint:       linkEndpoint,
@@ -304,7 +302,7 @@ func installVnetRoutes(stack *stack.Stack) error {
 
 // Run starts the VNet. It blocks until [ctx] is canceled, at which point it closes the link endpoint, waits
 // for all goroutines to terminate, and destroys the networking stack.
-func (m *Manager) Run(ctx context.Context) error {
+func (m *NetworkStack) Run(ctx context.Context) error {
 	m.slog.InfoContext(ctx, "Running Teleport VNet.", "ipv6_prefix", m.ipv6Prefix)
 
 	ctx, cancel := context.WithCancel(ctx)
@@ -348,7 +346,7 @@ func (m *Manager) Run(ctx context.Context) error {
 	return trace.NewAggregateFromChannel(allErrors, context.Background())
 }
 
-func (m *Manager) handleTCP(req *tcp.ForwarderRequest) {
+func (m *NetworkStack) handleTCP(req *tcp.ForwarderRequest) {
 	// Add 1 to the waitgroup because the networking stack runs this in its own goroutine.
 	m.wg.Add(1)
 	defer m.wg.Done()
@@ -423,7 +421,7 @@ func (m *Manager) handleTCP(req *tcp.ForwarderRequest) {
 	}
 }
 
-func (m *Manager) getTCPHandler(addr tcpip.Address) (TCPHandler, bool) {
+func (m *NetworkStack) getTCPHandler(addr tcpip.Address) (TCPHandler, bool) {
 	m.state.mu.RLock()
 	defer m.state.mu.RUnlock()
 	handler, ok := m.state.tcpHandlers[addr]
@@ -432,7 +430,7 @@ func (m *Manager) getTCPHandler(addr tcpip.Address) (TCPHandler, bool) {
 
 // assignTCPHandler assigns an IP address under [m.ipv6Prefix] to [handler], and returns that new assigned
 // address.
-func (m *Manager) assignTCPHandler(handler TCPHandler, fqdn string) (tcpip.Address, error) {
+func (m *NetworkStack) assignTCPHandler(handler TCPHandler, fqdn string) (tcpip.Address, error) {
 	m.state.mu.Lock()
 	defer m.state.mu.Unlock()
 
@@ -450,7 +448,7 @@ func (m *Manager) assignTCPHandler(handler TCPHandler, fqdn string) (tcpip.Addre
 	return addr, nil
 }
 
-func (m *Manager) handleUDP(req *udp.ForwarderRequest) {
+func (m *NetworkStack) handleUDP(req *udp.ForwarderRequest) {
 	m.wg.Add(1)
 	go func() {
 		defer m.wg.Done()
@@ -458,7 +456,7 @@ func (m *Manager) handleUDP(req *udp.ForwarderRequest) {
 	}()
 }
 
-func (m *Manager) handleUDPConcurrent(req *udp.ForwarderRequest) {
+func (m *NetworkStack) handleUDPConcurrent(req *udp.ForwarderRequest) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -488,14 +486,14 @@ func (m *Manager) handleUDPConcurrent(req *udp.ForwarderRequest) {
 	}
 }
 
-func (m *Manager) getUDPHandler(addr tcpip.Address) (UDPHandler, bool) {
+func (m *NetworkStack) getUDPHandler(addr tcpip.Address) (UDPHandler, bool) {
 	m.state.mu.RLock()
 	defer m.state.mu.RUnlock()
 	handler, ok := m.state.udpHandlers[addr]
 	return handler, ok
 }
 
-func (m *Manager) assignUDPHandler(addr tcpip.Address, handler UDPHandler) error {
+func (m *NetworkStack) assignUDPHandler(addr tcpip.Address, handler UDPHandler) error {
 	m.state.mu.Lock()
 	defer m.state.mu.Unlock()
 	if _, ok := m.state.udpHandlers[addr]; ok {
@@ -509,7 +507,7 @@ func (m *Manager) assignUDPHandler(addr tcpip.Address, handler UDPHandler) error
 }
 
 // ResolveA implements [dns.Resolver.ResolveA].
-func (m *Manager) ResolveA(ctx context.Context, fqdn string) (dns.Result, error) {
+func (m *NetworkStack) ResolveA(ctx context.Context, fqdn string) (dns.Result, error) {
 	result, err := m.resolveAAAA(ctx, fqdn)
 	if err != nil {
 		return dns.Result{}, trace.Wrap(err)
@@ -524,12 +522,12 @@ func (m *Manager) ResolveA(ctx context.Context, fqdn string) (dns.Result, error)
 }
 
 // ResolveAAAA implements [dns.Resolver.ResolveAAAA].
-func (m *Manager) ResolveAAAA(ctx context.Context, fqdn string) (dns.Result, error) {
+func (m *NetworkStack) ResolveAAAA(ctx context.Context, fqdn string) (dns.Result, error) {
 	result, err := m.resolveAAAA(ctx, fqdn)
 	return result, trace.Wrap(err)
 }
 
-func (m *Manager) resolveAAAA(ctx context.Context, fqdn string) (dns.Result, error) {
+func (m *NetworkStack) resolveAAAA(ctx context.Context, fqdn string) (dns.Result, error) {
 	// Do the actual resolution within a [singleflight.Group] keyed by [fqdn] to avoid concurrent requests to
 	// resolve an FQDN and then assign an address to it.
 	resultAny, err, _ := m.resolveHandlerGroup.Do(fqdn, func() (any, error) {
@@ -563,7 +561,7 @@ func (m *Manager) resolveAAAA(ctx context.Context, fqdn string) (dns.Result, err
 	return resultAny.(dns.Result), nil
 }
 
-func (m *Manager) appIPv6(fqdn string) (tcpip.Address, bool) {
+func (m *NetworkStack) appIPv6(fqdn string) (tcpip.Address, bool) {
 	m.state.mu.RLock()
 	defer m.state.mu.RUnlock()
 	ip, ok := m.state.appIPs[fqdn]
@@ -625,7 +623,7 @@ func forwardTUNtoNetstack(tun TUNDevice, linkEndpoint *channel.Endpoint) error {
 	}
 }
 
-func (m *Manager) addProtocolAddress(localAddress tcpip.Address) error {
+func (m *NetworkStack) addProtocolAddress(localAddress tcpip.Address) error {
 	protocolAddress, err := protocolAddress(localAddress)
 	if err != nil {
 		return trace.Wrap(err)
