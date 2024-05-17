@@ -1,8 +1,6 @@
 const yaml = require('yaml');
 const path = require('path');
 
-const maxLevel = 1;
-
 // TopicContentsFragment contains data necessary to generate a table of contents
 // page for the subdirectories of a user-specified root directory.
 // @param fs - The filesystem to use. Either memfs or the NodeJS fs package.
@@ -16,16 +14,16 @@ class TopicContentsFragment {
     this.fs = fs;
     this.root = root;
   }
-  // makeTopicTree constructs an index of the files in the directory, returning
+  // makeTopicPage constructs an index of the files in the directory, returning
   // it as a string.
   //
-  // makeTopicTree expects files in the directory to be MDX files with two
+  // makeTopicPage expects files in the directory to be MDX files with two
   // frontmatter keys, title and description. For each subdirectory, there must
   // be a menu page in the same directory as the subdirectory with the same name
   // as the subdirectory. For example, if there is a subdirectory called
   // "guides", we expect a menu page called "guides.mdx". We use this to
   // provide context for the subdirectory in the table of contents.
-  makeTopicTree() {
+  makeTopicPage() {
     const parts = path.parse(this.root);
     const rootConfig = path.join(parts.dir, parts.name + '.yaml');
     const fm = this.getFrontmatter(rootConfig);
@@ -70,7 +68,7 @@ ${fm.description}
   // @param filepath {string} - the path from which to generate a link path.
   relativePathToFile(filepath) {
     const rootName = path.parse(this.root).name;
-    return path.join(rootName, filepath.slice(this.root.length))
+    return path.join(rootName, filepath.slice(this.root.length));
   }
 
   // addTopicsFromDir takes the path at dirPath and recursively adds any topic
@@ -85,8 +83,9 @@ ${fm.description}
     let newText = sofar;
     const files = this.fs.readdirSync(dirPath, 'utf8');
 
-    // List all MDX files in the current directory
-    const mdxFiles = files.reduce((accum, current) => {
+    // List all MDX files in the current directory and add them to a map of
+    // files we'll use to build the menu page.
+    const frontmatterFiles = files.reduce((accum, current) => {
       const filename = path.parse(current).base;
       if (
         !current.endsWith('.mdx') ||
@@ -100,43 +99,22 @@ ${fm.description}
       return accum;
     }, {});
 
-    // List all subdirectories of the current directory
-    const dirs = files.reduce((accum, current) => {
+    // Add directory data to the menu page. We expect each directory to have
+    // an accompanying YAML file, named after the directory and at the same
+    // place in the file tree.
+    files.forEach((current) => {
       const stats = this.fs.statSync(path.join(dirPath, current));
       if (!stats.isDirectory()) {
-        return accum;
+        return;
       }
-      if (level !== maxLevel) {
-        accum[path.join(dirPath, current)] = true;
-      } else {
-        // Since we're at the maximum level, link to the expected menu page
-        // for the child directory, and don't traverse the directory further.
-        // Use the YAML config to get information about the directory.
-        mdxFiles[path.join(dirPath, current + '.yaml')] = true;
-      }
+      frontmatterFiles[path.join(dirPath, current + '.yaml')] = true;
+      // If we're working from a YAML config, don't also include a previously
+      // generated menu page.
+      delete frontmatterFiles[path.join(dirPath, current+'.mdx')]
+    });
 
-      return accum;
-    }, {});
-
-    // List all MDX files in the subdirectory with the same name as a
-    // subdirectory. By convention, these are menu pages for the subdirectory.
-    const menuPageConfigs = files.reduce((accum, current) => {
-      if (!current.endsWith('.yaml')) {
-        return accum;
-      }
-      const parts = path.parse(path.join(dirPath, current));
-      const asDir = path.join(parts.dir, parts.name);
-      if (dirs[asDir]) {
-        accum[path.join(dirPath, current)] = true;
-        // Exclude the menu page from the map of regular MDX pages. We
-        // treat these separately.
-        delete mdxFiles[asDir + '.mdx'];
-      }
-      return accum;
-    }, {});
-
-    // Add rows to the table.
-    Object.keys(mdxFiles).forEach(f => {
+    // Add rows to the menu page.
+    Object.keys(frontmatterFiles).forEach(f => {
       let relPath = this.relativePathToFile(f);
       const fm = this.getFrontmatter(f);
 
@@ -148,39 +126,6 @@ ${fm.description}
       }
 
       newText = newText + `- [${fm.title}](${relPath}): ${fm.description}\n`;
-    });
-
-    // Add another section of the topic for each subdirectory.
-    Object.keys(dirs).forEach(p => {
-      if (!menuPageConfigs[p + '.yaml']) {
-        throw new Error(
-          `expecting a menu page for ${p} called ${p + '.yaml'}, but there is none`
-        );
-      }
-      const fm = this.getFrontmatter(p + '.yaml');
-      let heading = '##';
-      for (let i = 0; i < level; i++) {
-        heading += '#';
-      }
-
-      // Make sure there is a blank line before the heading
-      if (!newText.endsWith('\n\n')) {
-        newText = newText + '\n';
-      }
-
-      // Remove trailing punctuation so the description makes sense in the same
-      // sentence as the parenthetical "more info" link.
-      const moreInfoDescription = fm.description.replace(/\.$/, '');
-      newText =
-        newText +
-        `${heading} ${fm.title}
-
-${moreInfoDescription} ([more info](${this.relativePathToFile(p) + '.mdx'})):
-
-`;
-      if (level <= maxLevel) {
-        newText = this.addTopicsFromDir(p, newText, level + 1);
-      }
     });
 
     return newText;

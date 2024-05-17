@@ -19,7 +19,7 @@ const addTopicsForDir = (dirPath, command) => {
   const frag = new TopicContentsFragment(command, fs, dirPath, '');
   const parts = path.parse(dirPath);
   const newPath = path.join(parts.dir, parts.name + '.mdx');
-  fs.writeFileSync(newPath, frag.makeTopicTree());
+  fs.writeFileSync(newPath, frag.makeTopicPage());
 
   fs.readdirSync(dirPath).forEach(filePath => {
     const fullPath = path.join(dirPath, filePath) 
