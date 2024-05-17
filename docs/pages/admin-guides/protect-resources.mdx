@@ -1,0 +1,115 @@
+---
+title: Protect Infrastructure Resources with Teleport
+description: Learn how to enroll servers, databases, and other infrastructure resources in your Teleport cluster.
+---
+
+{/*GENERATED FILE. DO NOT EDIT. RECREATE WITH THIS COMMAND:
+undefined*/}
+
+Learn how to enroll servers, databases, and other infrastructure resources in your Teleport cluster.
+
+- [Teleport Agents Overview](/agents.mdx): Deploy agents to enroll resources in your infrastructure with Teleport. You can run multiple Teleport services per agent."
+- [Deploy Teleport Agents with Terraform](/deploy-agents-terraform.mdx): In this guide, we will show you how to deploy a pool of Teleport agents so you can apply dynamic resources to enroll your infrastructure with Teleport.
+- [Protect Infrastructure Resources with Teleport](/overview.mdx): Provides instructions for enrolling servers, Kubernetes clusters, databases, applications, and Windows desktops in your Teleport cluster.
+
+## Protect Applications with Teleport
+
+Run the Teleport Application Service to enable secure access to applications ([more info](/application-access.mdx)):
+
+- [Protect Cloud Provider APIs with Teleport](/application-access/cloud-apis.mdx): Configure secure access to the AWS, Google Cloud, and Azure APIs.
+- [Application Access Role-Based Access Control](/application-access/controls.mdx): Role-Based Access Control (RBAC) for Teleport application access.
+- [Getting Started with Teleport Application Access](/application-access/getting-started.mdx): Getting started with Teleport application access.
+- [Enroll Applications in your Teleport Cluster](/application-access/guides.mdx): Read these guides for instructions on enrolling your internal applications in your Teleport cluster.
+- [Protect Applications with Teleport](/application-access/introduction.mdx): How to set up Teleport to protect applications and cloud provider APIs
+- [Protecting JWT Applications with Teleport](/application-access/jwt.mdx): Configure your Teleport cluster to issue JSON web tokens to enable secure connectivity to web applications.
+- [Protect Okta Applications with Teleport](/application-access/okta.mdx): Import applications from Okta so you can protect access to them with Teleport.
+- [Protect Applications with Teleport](/application-access/overview.mdx): How to set up Teleport to protect applications and cloud provider APIs
+- [Application Access Reference Documentation](/application-access/reference.mdx): Configuration and CLI reference documentation for Teleport application access.
+- [Troubleshooting Application Access](/application-access/troubleshooting-apps.mdx): Describes common issues and solutions for access to applications protected by Teleport.
+- [Protect Cloud Provider APIs with Teleport](/application-access/cloud-apis.mdx): Configure secure access to the AWS, Google Cloud, and Azure APIs.
+- [Enroll Applications in your Teleport Cluster](/application-access/guides.mdx): Read these guides for instructions on enrolling your internal applications in your Teleport cluster.
+- [Protecting JWT Applications with Teleport](/application-access/jwt.mdx): Configure your Teleport cluster to issue JSON web tokens to enable secure connectivity to web applications.
+- [Protect Okta Applications with Teleport](/application-access/okta.mdx): Import applications from Okta so you can protect access to them with Teleport.
+
+## Protect Databases with Teleport
+
+How to enrolls databases in your Teleport cluster for secure access ([more info](/database-access.mdx)):
+
+- [Database Access Architecture](/database-access/architecture.mdx): How Teleport enables secure access to databases.
+- [Automatic Database User Provisioning](/database-access/auto-user-provisioning.mdx): Create an ephemeral database user automatically when a Teleport user connects to a database for more secure access.
+- [Protect AWS Databases with Teleport](/database-access/enroll-aws-databases.mdx): Learn how to use Teleport to protect databases hosted on AWS.
+- [Protect Azure Databases with Teleport](/database-access/enroll-azure-databases.mdx): Learn how to use Teleport to protect databases hosted on Azure.
+- [Protect Google Cloud Databases with Teleport](/database-access/enroll-google-cloud-databases.mdx): Learn how to use Teleport to protect databases hosted on Google Cloud.
+- [Protect Managed Databases with Teleport](/database-access/enroll-managed-databases.mdx): Learn how to use Teleport to protect databases hosted as dedicated cloud services.
+- [Protect Self-Hosted Databases with Teleport](/database-access/enroll-self-hosted-databases.mdx): Learn how to use Teleport to protect databases hosted on your own infrastructure.
+- [Database Access FAQ](/database-access/faq.mdx): Frequently asked questions about Teleport database access.
+- [Database Access Getting Started Guide](/database-access/getting-started.mdx): Getting started with Teleport database access and AWS Aurora PostgreSQL.
+- [Database Access Guides](/database-access/guides.mdx): Guides for using the Teleport Database Service.
+- [Database Access](/database-access/introduction.mdx): Teleport database access introduction, demo and resources.
+- [Protect Databases with Teleport](/database-access/overview.mdx): Teleport database access introduction, demo and resources.
+- [Database Access RBAC](/database-access/rbac.mdx): Role-based access control (RBAC) for Teleport database access.
+- [Database Access Reference](/database-access/reference.mdx): How to configure the Teleport Database Service
+- [Troubleshooting Database Access](/database-access/troubleshooting.mdx): Common issues and resolutions for Teleport's Database Access
+- [Automatic Database User Provisioning](/database-access/auto-user-provisioning.mdx): Create an ephemeral database user automatically when a Teleport user connects to a database for more secure access.
+- [Protect AWS Databases with Teleport](/database-access/enroll-aws-databases.mdx): Learn how to use Teleport to protect databases hosted on AWS.
+- [Protect Azure Databases with Teleport](/database-access/enroll-azure-databases.mdx): Learn how to use Teleport to protect databases hosted on Azure.
+- [Protect Google Cloud Databases with Teleport](/database-access/enroll-google-cloud-databases.mdx): Learn how to use Teleport to protect databases hosted on Google Cloud.
+- [Protect Managed Databases with Teleport](/database-access/enroll-managed-databases.mdx): Learn how to use Teleport to protect databases hosted as dedicated cloud services.
+- [Protect Self-Hosted Databases with Teleport](/database-access/enroll-self-hosted-databases.mdx): Learn how to use Teleport to protect databases hosted on your own infrastructure.
+- [Database Access Guides](/database-access/guides.mdx): Guides for using the Teleport Database Service.
+- [Database Access Reference](/database-access/reference.mdx): How to configure the Teleport Database Service
+
+## Protect Desktops with Teleport
+
+Enroll Windows Desktops in your Teleport cluster for secure acces ([more info](/desktop-access.mdx)):
+
+- [Configure access for Active Directory manually](/desktop-access/active-directory-manual.mdx): Explains how to manually connect Teleport to an Active Directory domain.
+- [Configure access for Active Directory with scripts](/desktop-access/active-directory.mdx): Demonstrates how to integrate the Teleport Windows Desktop Service with your Active Directory domain using scripts.
+- [Directory Sharing](/desktop-access/directory-sharing.mdx): Teleport desktop Directory Sharing lets you easily send files to a remote desktop.
+- [Configure access for local Windows users](/desktop-access/getting-started.mdx): Use Teleport to configure passwordless access for local Windows users.
+- [Manage Access to Windows Resources](/desktop-access/introduction.mdx): Demonstrates how you can manage access to Windows desktops with Teleport.
+- [Protect Windows Desktops with Teleport](/desktop-access/overview.mdx): Demonstrates how you can manage access to Windows desktops with Teleport.
+- [Role-Based Access Control for Desktops](/desktop-access/rbac.mdx): Role-based access control (RBAC) for desktops protected by Teleport.
+- [Desktop Access Reference](/desktop-access/reference.mdx): How to configure the Teleport Desktop Service
+- [Troubleshooting Desktop Access](/desktop-access/troubleshooting.mdx): Common issues and resolutions for Teleport's desktop access
+- [Desktop Access Reference](/desktop-access/reference.mdx): How to configure the Teleport Desktop Service
+
+## Join Services to your Cluster
+
+Methods for establishing trust between Teleport services and the Teleport Auth Service ([more info](/join-services-to-your-cluster.mdx)):
+
+- [Joining Services via AWS EC2 Identity Document](/join-services-to-your-cluster/aws-ec2.mdx): Use the EC2 join method to add services to your Teleport cluster on AWS
+- [Joining Services via AWS IAM Role](/join-services-to-your-cluster/aws-iam.mdx): Use the IAM join method to add services to your Teleport cluster on AWS
+- [Joining Services via Azure Managed Identity](/join-services-to-your-cluster/azure.mdx): Use the Azure join method to join Teleport services to your Teleport cluster on Azure
+- [Join Services with GCP](/join-services-to-your-cluster/gcp.mdx): Use the GCP join method to add services to your Teleport cluster.
+- [Join Services with a Secure Token](/join-services-to-your-cluster/join-token.mdx): This guide shows you how to join a Teleport instance to your cluster using a join token in order to proxy access to resources in your infrastructure.
+- [Joining Services via Kubernetes ServiceAccount Token](/join-services-to-your-cluster/kubernetes.mdx): Use Kubernetes ServiceAccount tokens to join services running in the same Kubernetes cluster as the Auth Service.
+- [Join Services to your Teleport Cluster](/join-services-to-your-cluster/overview.mdx): How to register the Proxy Service, Database Service, and other Teleport services with your cluster.
+
+## Protect Kubernetes Clusters with Teleport
+
+Enroll Kubernetes clusters in your Teleport cluster for secure acces ([more info](/kubernetes-access.mdx)):
+
+- [Teleport Kubernetes Access Controls](/kubernetes-access/controls.mdx): How the Teleport Kubernetes Service applies RBAC to manage access to Kubernetes
+- [Kubernetes Access FAQ](/kubernetes-access/faq.mdx): Frequently asked questions about Teleport Kubernetes Access
+- [Enroll a Kubernetes Cluster](/kubernetes-access/getting-started.mdx): Demonstrates how to enroll a Kubernetes cluster as a resource protected by Teleport.
+- [Access Kubernetes Clusters with Teleport](/kubernetes-access/introduction.mdx): Learn how Teleport can protect your Kubernetes clusters with RBAC, audit logging, and more.
+- [Setting Up Teleport Access Controls for Kubernetes](/kubernetes-access/manage-access.mdx): How to configure Teleport roles to access clusters, groups, users, and resources in Kubernetes.
+- [Protect Kubernetes Clusters with Teleport](/kubernetes-access/overview.mdx): Learn how Teleport can protect your Kubernetes clusters with RBAC, audit logging, and more.
+- [Enroll Kubernetes Clusters with Teleport](/kubernetes-access/register-clusters.mdx): How to enroll Kubernetes clusters with your Teleport cluster.
+- [Kubernetes Access Troubleshooting](/kubernetes-access/troubleshooting.mdx): Troubleshooting common issues with Kubernetes access
+- [Enroll Kubernetes Clusters with Teleport](/kubernetes-access/register-clusters.mdx): How to enroll Kubernetes clusters with your Teleport cluster.
+
+## Protect SSH Servers with Teleport
+
+Enroll SSH servers in your Teleport cluster for secure acces ([more info](/server-access.mdx)):
+
+- [Server Access Getting Started Guide](/server-access/getting-started.mdx): Getting started with Teleport server access.
+- [Server Access Guides](/server-access/guides.mdx): How to enroll SSH servers in your Teleport cluster.
+- [Teleport Server Access Features and Introduction](/server-access/introduction.mdx): Teleport server access features and introduction.
+- [Enroll OpenSSH Servers with Teleport](/server-access/openssh.mdx): How to enroll legacy OpenSSH servers in your Teleport cluster.
+- [Protect SSH Servers with Teleport](/server-access/overview.mdx): Teleport server access features and introduction.
+- [Access Controls for Servers](/server-access/rbac.mdx): Role-based access control (RBAC) for Teleport server access.
+- [Troubleshooting Server Access](/server-access/troubleshooting-server.mdx): Describes common issues and solutions for access to servers.
+- [Server Access Guides](/server-access/guides.mdx): How to enroll SSH servers in your Teleport cluster.
+- [Enroll OpenSSH Servers with Teleport](/server-access/openssh.mdx): How to enroll legacy OpenSSH servers in your Teleport cluster.

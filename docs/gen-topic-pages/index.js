@@ -22,9 +22,10 @@ const addTopicsForDir = (dirPath, command) => {
   fs.writeFileSync(newPath, frag.makeTopicTree());
 
   fs.readdirSync(dirPath).forEach(filePath => {
-    const stats = fs.statSync(filePath);
+    const fullPath = path.join(dirPath, filePath) 
+    const stats = fs.statSync(fullPath);
     if (stats.isDirectory()) {
-      addTopicsForDir(filePath);
+      addTopicsForDir(fullPath);
     }
   });
 };

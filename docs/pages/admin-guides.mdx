@@ -71,7 +71,10 @@ The Teleport Discovery Service can enroll resources in Teleport automatically by
 
 - [AWS Database Auto-Discovery](/auto-discovery/databases.mdx): How to configure Teleport to discover AWS-hosted databases.
 - [Teleport Auto-Discovery](/auto-discovery/introduction.mdx): Learn how to use the Teleport Discovery Service, which automatically enrolls resources by query APIs
+- [Automatically Enroll Kubernetes Applications](/auto-discovery/kubernetes-applications.mdx): Automatically enroll applications running as Kubernetes services in your Teleport cluster.
+- [Kubernetes Auto-Discovery](/auto-discovery/kubernetes.mdx): Automatically enroll Kubernetes clusters in Teleport.
 - [Teleport Auto-Discovery](/auto-discovery/overview.mdx): Learn how to use the Teleport Discovery Service, which automatically enrolls resources by query APIs
+- [Automatically enroll servers with Teleport](/auto-discovery/servers.mdx): The Teleport Discovery Service can automatically enroll servers with Teleport.
 - [Kubernetes Auto-Discovery](/auto-discovery/kubernetes.mdx): Automatically enroll Kubernetes clusters in Teleport.
 - [Automatically Enroll Kubernetes Applications](/auto-discovery/kubernetes-applications.mdx): Automatically enroll applications running as Kubernetes services in your Teleport cluster.
 - [Automatically enroll servers with Teleport](/auto-discovery/servers.mdx): The Teleport Discovery Service can automatically enroll servers with Teleport.
@@ -167,13 +170,17 @@ When a user logs in to Teleport with a Single Sign-On provider, Login Rules dyna
 
 Learn how to provide secure access to infrastructure resources from bots and service accounts ([more info](/machine-id.mdx)):
 
+- [Machine ID Access Guides](/machine-id/access-guides.mdx): Learn how to configure a Machine ID Bot to access resources in your infrastructure.
 - [Machine ID Architecture](/machine-id/architecture.mdx): How Teleport Machine ID works.
+- [Machine ID Deployment Guides](/machine-id/deployment.mdx): Learn how to deploy the `tbot` binary on your platform of choice.
 - [Machine ID FAQ](/machine-id/faq.mdx): Frequently asked questions about Teleport Machine ID
 - [Machine ID Getting Started Guide](/machine-id/getting-started.mdx): Getting started with Teleport Machine ID
 - [Machine ID](/machine-id/introduction.mdx): Teleport Machine ID introduction, demo and resources.
 - [Machine ID Manifesto](/machine-id/manifesto.mdx): A manifesto for Machine Identity
 - [Machine ID](/machine-id/overview.mdx): Teleport Machine ID introduction, demo and resources.
+- [Machine ID Reference](/machine-id/reference.mdx): Configuration fields and commands related to Machine ID.
 - [Machine ID Troubleshooting Guide](/machine-id/troubleshooting.mdx): Troubleshooting common issues with Machine ID
+- [Workload Identity](/machine-id/workload-identity.mdx): Provide secure access to specific workloads using Teleport.
 - [Machine ID Access Guides](/machine-id/access-guides.mdx): Learn how to configure a Machine ID Bot to access resources in your infrastructure.
 - [Machine ID Deployment Guides](/machine-id/deployment.mdx): Learn how to deploy the `tbot` binary on your platform of choice.
 - [Machine ID Reference](/machine-id/reference.mdx): Configuration fields and commands related to Machine ID.
@@ -184,8 +191,14 @@ Learn how to provide secure access to infrastructure resources from bots and ser
 Learn how to enroll servers, databases, and other infrastructure resources in your Teleport cluster ([more info](/protect-resources.mdx)):
 
 - [Teleport Agents Overview](/protect-resources/agents.mdx): Deploy agents to enroll resources in your infrastructure with Teleport. You can run multiple Teleport services per agent."
+- [Protect Applications with Teleport](/protect-resources/application-access.mdx): Run the Teleport Application Service to enable secure access to applications.
+- [Protect Databases with Teleport](/protect-resources/database-access.mdx): How to enrolls databases in your Teleport cluster for secure access.
 - [Deploy Teleport Agents with Terraform](/protect-resources/deploy-agents-terraform.mdx): In this guide, we will show you how to deploy a pool of Teleport agents so you can apply dynamic resources to enroll your infrastructure with Teleport.
+- [Protect Desktops with Teleport](/protect-resources/desktop-access.mdx): Enroll Windows Desktops in your Teleport cluster for secure acces.
+- [Join Services to your Cluster](/protect-resources/join-services-to-your-cluster.mdx): Methods for establishing trust between Teleport services and the Teleport Auth Service.
+- [Protect Kubernetes Clusters with Teleport](/protect-resources/kubernetes-access.mdx): Enroll Kubernetes clusters in your Teleport cluster for secure acces.
 - [Protect Infrastructure Resources with Teleport](/protect-resources/overview.mdx): Provides instructions for enrolling servers, Kubernetes clusters, databases, applications, and Windows desktops in your Teleport cluster.
+- [Protect SSH Servers with Teleport](/protect-resources/server-access.mdx): Enroll SSH servers in your Teleport cluster for secure acces.
 - [Protect Applications with Teleport](/protect-resources/application-access.mdx): Run the Teleport Application Service to enable secure access to applications.
 - [Protect Databases with Teleport](/protect-resources/database-access.mdx): How to enrolls databases in your Teleport cluster for secure access.
 - [Protect Desktops with Teleport](/protect-resources/desktop-access.mdx): Enroll Windows Desktops in your Teleport cluster for secure acces.
@@ -222,6 +235,8 @@ Learn how to deploy a self-hosted Teleport cluster ([more info](/self-hosted-tel
 
 - [Teleport High Availability mode on AWS](/self-hosted-teleport/aws-ha-autoscale-cluster-terraform.mdx): How to configure Teleport in High Availability mode for AWS deployments.
 - [Teleport Single-Instance Deployment on AWS](/self-hosted-teleport/aws-starter-cluster-terraform.mdx): How to quickly configure Teleport on a single instance for testing in AWS.
+- [Use Teleport with a Custom Key Management System](/self-hosted-teleport/custom-kms.mdx): Get control over the private key material that the Teleport Auth Service uses to sign certificates with a custom KMS.
+- [Deploy Self-Hosted Teleport with Helm](/self-hosted-teleport/helm-deployments.mdx): Learn how to use the `teleport-cluster` Helm chart on your cloud provider.
 - [Self-Hosting Teleport](/self-hosted-teleport/overview.mdx): Provides guides to hosting your own Teleport cluster
 - [Scaling](/self-hosted-teleport/scaling.mdx): How to configure Teleport for large-scale deployments
 - [Use Teleport with a Custom Key Management System](/self-hosted-teleport/custom-kms.mdx): Get control over the private key material that the Teleport Auth Service uses to sign certificates with a custom KMS.
