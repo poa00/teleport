@@ -270,9 +270,9 @@ type IntegrationConfAccessGraphAWSSync struct {
 // IntegrationConfAzureOIDC contains the arguments of
 // `teleport integration configure azure-oidc` command
 type IntegrationConfAzureOIDC struct {
-	// OIDCIssuer is the URL for the OIDC Issuer
-	// in the federated credential of the enterprise application that will be created.
-	OIDCIssuer string
+	// ProxyPublicAddr is the publicly-reachable URL of the Teleport Proxy.
+	// It is used as the OIDC issuer URL, as well as for SAML URIs.
+	ProxyPublicAddr string
 
 	// AccessGraph is a flag indicating that access graph integration is requested.
 	// When this is true, the integration script will produce

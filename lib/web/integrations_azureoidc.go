@@ -28,7 +28,7 @@ func (h *Handler) azureOIDCConfigure(w http.ResponseWriter, r *http.Request, p h
 	// The script must execute the following command:
 	argsList := []string{
 		"integration", "configure", "azure-oidc",
-		fmt.Sprintf("--oidc-issuer=%s", shsprintf.EscapeDefaultContext(oidcIssuer)),
+		fmt.Sprintf("--proxy-public-addr=%s", shsprintf.EscapeDefaultContext(oidcIssuer)),
 	}
 
 	if tagParam := queryParams.Get("accessGraph"); tagParam != "" {

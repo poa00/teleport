@@ -2,13 +2,22 @@ package azureoidc
 
 import (
 	"context"
+	"net/url"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/gravitational/trace"
 	msgraphsdk "github.com/microsoftgraph/msgraph-sdk-go"
+	"github.com/microsoftgraph/msgraph-sdk-go/applicationtemplates"
 	"github.com/microsoftgraph/msgraph-sdk-go/models"
 	"github.com/microsoftgraph/msgraph-sdk-go/serviceprincipals"
 )
+
+// A special application template ID in Microsoft Graph, equivalent to the "create your own application" option in Azure portal.
+// Only non-gallery apps ("Create your own application" option in the UI) are allowed to use SAML SSO,
+// hence we use this template.
+// Ref: https://learn.microsoft.com/en-us/graph/api/applicationtemplate-instantiate
+const nonGalleryAppTemplateID = "8adf8e6e-67b2-4cf2-a259-e3dc5476c621"
 
 // Ref: https://learn.microsoft.com/en-us/graph/permissions-reference
 var appRoles = []string{
@@ -33,25 +42,23 @@ func SetupEnterpriseApp(ctx context.Context, proxyPublicAddr string) (string, st
 		return appID, tenantID, trace.Wrap(err)
 	}
 
-	displayName := "Teleport" + " " + proxyPublicAddr
+	displayName := "Teleport" + " " + strings.TrimPrefix(proxyPublicAddr, "https://")
 
-	app := models.NewApplication()
-	app.SetDisplayName(&displayName)
+	instantiateRequest := applicationtemplates.NewItemInstantiatePostRequestBody()
+	instantiateRequest.SetDisplayName(&displayName)
+	appAndSP, err := graphClient.ApplicationTemplates().
+		ByApplicationTemplateId(nonGalleryAppTemplateID).
+		Instantiate().
+		Post(ctx, instantiateRequest, nil)
 
-	createdApp, err := graphClient.Applications().Post(ctx, app, nil)
 	if err != nil {
-		return appID, tenantID, trace.Wrap(err, "failed to create an application")
+		return appID, tenantID, trace.Wrap(err, "failed to instantiate application template")
 	}
-	appID = *createdApp.GetAppId()
 
-	sp := models.NewServicePrincipal()
-	sp.SetAppId(&appID)
-
-	createdSP, err := graphClient.ServicePrincipals().Post(ctx, sp, nil)
-	if err != nil {
-		return appID, tenantID, trace.Wrap(err, "failed to create a service principal")
-	}
-	spID := *createdSP.GetId()
+	app := appAndSP.GetApplication()
+	sp := appAndSP.GetServicePrincipal()
+	appID = *app.GetAppId()
+	spID := *sp.GetId()
 
 	msGraphResourceID, err := getMSGraphResourceID(ctx, graphClient)
 	if err != nil {
@@ -62,7 +69,6 @@ func SetupEnterpriseApp(ctx context.Context, proxyPublicAddr string) (string, st
 
 	for _, appRoleID := range appRoles {
 		assignment := models.NewAppRoleAssignment()
-
 		spUUID := uuid.MustParse(spID)
 		assignment.SetPrincipalId(&spUUID)
 
@@ -79,11 +85,80 @@ func SetupEnterpriseApp(ctx context.Context, proxyPublicAddr string) (string, st
 		}
 	}
 
-	if err := createFederatedAuthCredential(ctx, graphClient, *createdApp.GetId(), proxyPublicAddr); err != nil {
+	if err := createFederatedAuthCredential(ctx, graphClient, *app.GetId(), proxyPublicAddr); err != nil {
 		return appID, tenantID, trace.Wrap(err, "failed to create an OIDC federated auth credential")
 	}
 
+	if err := setupSSO(ctx, graphClient, appID, *app.GetId(), spID, proxyPublicAddr); err != nil {
+		return appID, tenantID, trace.Wrap(err, "failed to set up SSO for the enterprise app")
+	}
+
 	return appID, tenantID, nil
+}
+
+func setupSSO(ctx context.Context, graphClient *msgraphsdk.GraphServiceClient, appID string, appObjectID string, spID string, proxyPublicAddr string) error {
+	// Set service principal to prefer SAML sign on
+	spPatch := models.NewServicePrincipal()
+	preferredSingleSignOnMode := "saml"
+	spPatch.SetPreferredSingleSignOnMode(&preferredSingleSignOnMode)
+
+	_, err := graphClient.ServicePrincipals().
+		ByServicePrincipalId(spID).
+		Patch(ctx, spPatch, nil)
+
+	if err != nil {
+		return trace.Wrap(err, "failed to enable SSO for service principal")
+	}
+
+	// Add SAML urls
+	app := models.NewApplication()
+	samlURI, err := url.Parse(proxyPublicAddr)
+	if err != nil {
+		return trace.Wrap(err)
+	}
+	samlURI.Path = "/v1/webapi/saml/acs/ad"
+	app.SetIdentifierUris([]string{samlURI.String()})
+	webApp := models.NewWebApplication()
+	webApp.SetRedirectUris([]string{samlURI.String()})
+	app.SetWeb(webApp)
+
+	_, err = graphClient.Applications().
+		ByApplicationId(appObjectID).
+		Patch(ctx, app, nil)
+
+	if err != nil {
+		return trace.Wrap(err, "failed to set SAML URIs")
+	}
+
+	// Add a SAML signing certificate
+	certRequest := serviceprincipals.NewItemAddTokenSigningCertificatePostRequestBody()
+	// Display name is required to start with `CN=`.
+	// Ref: https://learn.microsoft.com/en-us/graph/api/serviceprincipal-addtokensigningcertificate
+	displayName := "CN=azure-sso"
+	certRequest.SetDisplayName(&displayName)
+
+	cert, err := graphClient.ServicePrincipals().
+		ByServicePrincipalId(spID).
+		AddTokenSigningCertificate().
+		Post(ctx, certRequest, nil)
+
+	if err != nil {
+		trace.Wrap(err, "failed to set up a signing certificate")
+	}
+
+	// Set the preferred SAML signing key
+	spPatch = models.NewServicePrincipal()
+	spPatch.SetPreferredTokenSigningKeyThumbprint(cert.GetThumbprint())
+
+	_, err = graphClient.ServicePrincipals().
+		ByServicePrincipalId(spID).
+		Patch(ctx, spPatch, nil)
+
+	if err != nil {
+		return trace.Wrap(err, "failed to enable SSO for service principal")
+	}
+
+	return nil
 }
 
 func createFederatedAuthCredential(ctx context.Context, graphClient *msgraphsdk.GraphServiceClient, appObjectID string, proxyPublicAddr string) error {

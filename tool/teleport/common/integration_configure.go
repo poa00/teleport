@@ -224,7 +224,7 @@ func onIntegrationConfAzureOIDCCmd(ctx context.Context, params config.Integratio
 	// Ensure we print output to the user. LogLevel at this point was set to Error.
 	utils.InitLogger(utils.LoggingForDaemon, slog.LevelInfo)
 
-	appID, tenantID, err := azureoidc.SetupEnterpriseApp(ctx, params.OIDCIssuer)
+	appID, tenantID, err := azureoidc.SetupEnterpriseApp(ctx, params.ProxyPublicAddr)
 	if err != nil {
 		return trace.Wrap(err)
 	}
