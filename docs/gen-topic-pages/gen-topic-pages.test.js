@@ -9,7 +9,7 @@ description: "Guides to setting up the product."
 `,
     '/docs/database-access.yaml': `---
 title: "Database Access"
-description: "Guides related to Database Access"
+description: "Guides related to Database Access."
 ---`,
     '/docs/database-access/page1.mdx': `---
 title: "Database Access Page 1"
@@ -35,8 +35,8 @@ description: "Protecting App 2 with Teleport"
 
   test('lists the contents of a directory', () => {
     const expected = `---
-title: "Database Access"
-description: "Guides related to Database Access"
+title: Database Access
+description: Guides related to Database Access.
 ---
 
 {/*GENERATED FILE. DO NOT EDIT. RECREATE WITH THIS COMMAND:
@@ -62,8 +62,8 @@ Guides related to Database Access.
 
   test('handles frontmatter document separators', () => {
     const expected = `---
-title: "Database Access"
-description: "Guides related to Database Access"
+title: Database Access
+description: Guides related to Database Access.
 ---
 
 {/*GENERATED FILE. DO NOT EDIT. RECREATE WITH THIS COMMAND:
@@ -77,8 +77,8 @@ Guides related to Database Access.
 
     const vol = Volume.fromJSON({
       '/docs/database-access.yaml': `---
-title: "Database Access"
-description: "Guides related to Database Access"
+title: Database Access
+description: Guides related to Database Access.
 ---`,
       '/docs/database-access/page1.mdx': `---
 title: "Database Access Page 1"
@@ -102,8 +102,8 @@ description: "Protecting DB 2 with Teleport"
 
   test('ignores files called "all-topics.mdx"', () => {
     const expected = `---
-title: "Database Access"
-description: "Guides related to Database Access"
+title: Database Access
+description: Guides related to Database Access.
 ---
 
 {/*GENERATED FILE. DO NOT EDIT. RECREATE WITH THIS COMMAND:
@@ -119,7 +119,7 @@ Guides related to Database Access.
     const vol = Volume.fromJSON({
       '/docs/database-access.yaml': `---
 title: "Database Access"
-description: "Guides related to Database Access"
+description: "Guides related to Database Access."
 ---`,
       '/docs/database-access/introduction.mdx': `---
 title: "Introduction"
@@ -151,14 +151,14 @@ description: "Protecting DB 2 with Teleport"
 
   test('adds section headings if the root includes directories (single)', () => {
     const expected = `---
-title: "Application Access"
-description: "Guides related to Application Access"
+title: Documentation Home
+description: Guides for setting up the product.
 ---
 
 {/*GENERATED FILE. DO NOT EDIT. RECREATE WITH THIS COMMAND:
 sample-command*/}
 
-Guides related to Application Access.
+Guides for setting up the product.
 
 ## Application Access
 
@@ -169,6 +169,10 @@ Guides related to Application Access ([more info](../application-access.mdx)):
 `;
 
     const vol = Volume.fromJSON({
+      '/docs.yaml': `---
+title: Documentation Home
+description: Guides for setting up the product.
+---`,
       '/docs/application-access.yaml': `---
 title: "Application Access"
 description: "Guides related to Application Access"

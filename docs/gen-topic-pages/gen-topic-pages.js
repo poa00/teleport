@@ -30,8 +30,18 @@ class TopicContentsFragment {
   // "guides", we expect a menu page called "guides.mdx". We use this to
   // provide context for the subdirectory in the table of contents.
   makeTopicTree() {
-    const initial = `{/*GENERATED FILE. DO NOT EDIT. RECREATE WITH THIS COMMAND:
+    const parts = path.parse(this.root);
+    const rootConfig = path.join(parts.dir, parts.name + '.yaml');
+    const fm = this.getFrontmatter(rootConfig);
+    const initial = `---
+title: ${fm.title}
+description: ${fm.description}
+---
+
+{/*GENERATED FILE. DO NOT EDIT. RECREATE WITH THIS COMMAND:
 ${this.command}*/}
+
+${fm.description}
 
 `;
     return this.addTopicsFromDir(this.root, initial, 0);
@@ -164,11 +174,15 @@ ${this.command}*/}
       if (!newText.endsWith('\n\n')) {
         newText = newText + '\n';
       }
+
+      // Remove trailing punctuation so the description makes sense in the same
+      // sentence as the parenthetical "more info" link.
+      const moreInfoDescription = fm.description.replace(/\.$/, '');
       newText =
         newText +
         `${heading} ${fm.title}
 
-${fm.description} ([more info](${this.relativePathToFile(p) + '.mdx'})):
+${moreInfoDescription} ([more info](${this.relativePathToFile(p) + '.mdx'})):
 
 `;
       if (level <= maxLevel) {
