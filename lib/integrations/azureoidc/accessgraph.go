@@ -114,7 +114,7 @@ func CreateTAGCacheFile(ctx context.Context) error {
 	if err != nil {
 		return trace.Wrap(err)
 	}
-	return trace.Wrap(os.WriteFile("cache.json", payload, 0400), "failed to write the TAG cache file")
+	return trace.Wrap(os.WriteFile("cache.json", payload, 0600), "failed to write the TAG cache file")
 }
 
 // gzipBytes compresses the given byte slice, returning the result as a new byte slice.
