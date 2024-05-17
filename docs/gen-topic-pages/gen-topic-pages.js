@@ -6,18 +6,14 @@ const maxLevel = 1;
 // TopicContentsFragment contains data necessary to generate a table of contents
 // page for the subdirectories of a user-specified root directory.
 // @param fs - The filesystem to use. Either memfs or the NodeJS fs package.
-// @param {string} prefix - prefix to append before any links in the topic tree.
-// This is a sequence of relative path characters, e.g., "../../", and enables
-// users to place topic trees within directories for partials.
 // @param {string} root - file path in fs in which to place the table of
 // contents partial. While TopicContentsFragment is not responsible for writing
 // the output file, it builds the table of contents based on the assumption that
 // it will be a partial in the specified directory.
 class TopicContentsFragment {
-  constructor(command, fs, root, prefix) {
+  constructor(command, fs, root) {
     this.command = command;
     this.fs = fs;
-    this.prefix = prefix;
     this.root = root;
   }
   // makeTopicTree constructs an index of the files in the directory, returning
@@ -66,18 +62,6 @@ ${fm.description}
     }
 
     return fm;
-  }
-
-  // relativePathToFile takes a filepath and returns a path we can use in links
-  // to the file in a table of contents page. The link path is a relative path
-  // to the directory where we are placing the table of contents page.
-  // @param filepath {string} - the path from which to generate a link path.
-  relativePathToFile(filepath) {
-    // Remove the root and replace it with the prefix. Add any
-    // path segments to get us from the prefix to any inner
-    // child directories.
-    const additionalpathsegments = filepath.slice(this.root.length);
-    return path.join(this.prefix, additionalpathsegments);
   }
 
   // addTopicsFromDir takes the path at dirPath and recursively adds any topic
@@ -144,7 +128,7 @@ ${fm.description}
 
     // Add rows to the table.
     Object.keys(mdxFiles).forEach(f => {
-      let relPath = this.relativePathToFile(f);
+      let relPath = path.relative(this.root, f);
       const fm = this.getFrontmatter(f);
 
       // We're using a YAML file for directory information, so change the link
@@ -182,7 +166,7 @@ ${fm.description}
         newText +
         `${heading} ${fm.title}
 
-${moreInfoDescription} ([more info](${this.relativePathToFile(p) + '.mdx'})):
+${moreInfoDescription} ([more info](${path.relative(this.root, p) + '.mdx'})):
 
 `;
       if (level <= maxLevel) {

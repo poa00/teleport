@@ -44,8 +44,8 @@ sample-command*/}
 
 Guides related to Database Access.
 
-- [Database Access Page 1](../page1.mdx): Protecting DB 1 with Teleport
-- [Database Access Page 2](../page2.mdx): Protecting DB 2 with Teleport
+- [Database Access Page 1](page1.mdx): Protecting DB 1 with Teleport
+- [Database Access Page 2](page2.mdx): Protecting DB 2 with Teleport
 `;
 
     const vol = Volume.fromJSON(testFilesTwoSections);
@@ -53,8 +53,7 @@ Guides related to Database Access.
     const frag = new TopicContentsFragment(
       'sample-command',
       fs,
-      '/docs/database-access',
-      '..'
+      '/docs/database-access'
     );
     const actual = frag.makeTopicTree();
     expect(actual).toBe(expected);
@@ -71,8 +70,8 @@ sample-command*/}
 
 Guides related to Database Access.
 
-- [Database Access Page 1](../page1.mdx): Protecting DB 1 with Teleport
-- [Database Access Page 2](../page2.mdx): Protecting DB 2 with Teleport
+- [Database Access Page 1](page1.mdx): Protecting DB 1 with Teleport
+- [Database Access Page 2](page2.mdx): Protecting DB 2 with Teleport
 `;
 
     const vol = Volume.fromJSON({
@@ -93,8 +92,7 @@ description: "Protecting DB 2 with Teleport"
     const frag = new TopicContentsFragment(
       'sample-command',
       fs,
-      '/docs/database-access',
-      '..'
+      '/docs/database-access'
     );
     const actual = frag.makeTopicTree();
     expect(actual).toBe(expected);
@@ -111,9 +109,9 @@ sample-command*/}
 
 Guides related to Database Access.
 
-- [Introduction](../introduction.mdx): Protecting databases with Teleport
-- [Database Access Page 1](../page1.mdx): Protecting DB 1 with Teleport
-- [Database Access Page 2](../page2.mdx): Protecting DB 2 with Teleport
+- [Introduction](introduction.mdx): Protecting databases with Teleport
+- [Database Access Page 1](page1.mdx): Protecting DB 1 with Teleport
+- [Database Access Page 2](page2.mdx): Protecting DB 2 with Teleport
 `;
 
     const vol = Volume.fromJSON({
@@ -142,8 +140,7 @@ description: "Protecting DB 2 with Teleport"
     const frag = new TopicContentsFragment(
       'sample-command',
       fs,
-      '/docs/database-access',
-      '..'
+      '/docs/database-access'
     );
     const actual = frag.makeTopicTree();
     expect(actual).toBe(expected);
@@ -162,10 +159,10 @@ Guides for setting up the product.
 
 ## Application Access
 
-Guides related to Application Access ([more info](../application-access.mdx)):
+Guides related to Application Access ([more info](application-access.mdx)):
 
-- [Application Access Page 1](../application-access/page1.mdx): Protecting App 1 with Teleport
-- [Application Access Page 2](../application-access/page2.mdx): Protecting App 2 with Teleport
+- [Application Access Page 1](application-access/page1.mdx): Protecting App 1 with Teleport
+- [Application Access Page 2](application-access/page2.mdx): Protecting App 2 with Teleport
 `;
 
     const vol = Volume.fromJSON({
@@ -187,7 +184,7 @@ description: "Protecting App 2 with Teleport"
 ---`,
     });
     const fs = createFsFromVolume(vol);
-    const frag = new TopicContentsFragment('sample-command', fs, '/docs', '..');
+    const frag = new TopicContentsFragment('sample-command', fs, '/docs');
     const actual = frag.makeTopicTree();
     expect(actual).toBe(expected);
   });
@@ -205,22 +202,22 @@ Guides to setting up the product.
 
 ## Application Access
 
-Guides related to Application Access ([more info](../application-access.mdx)):
+Guides related to Application Access ([more info](application-access.mdx)):
 
-- [Application Access Page 1](../application-access/page1.mdx): Protecting App 1 with Teleport
-- [Application Access Page 2](../application-access/page2.mdx): Protecting App 2 with Teleport
+- [Application Access Page 1](application-access/page1.mdx): Protecting App 1 with Teleport
+- [Application Access Page 2](application-access/page2.mdx): Protecting App 2 with Teleport
 
 ## Database Access
 
-Guides related to Database Access ([more info](../database-access.mdx)):
+Guides related to Database Access ([more info](database-access.mdx)):
 
-- [Database Access Page 1](../database-access/page1.mdx): Protecting DB 1 with Teleport
-- [Database Access Page 2](../database-access/page2.mdx): Protecting DB 2 with Teleport
+- [Database Access Page 1](database-access/page1.mdx): Protecting DB 1 with Teleport
+- [Database Access Page 2](database-access/page2.mdx): Protecting DB 2 with Teleport
 `;
 
     const vol = Volume.fromJSON(testFilesTwoSections);
     const fs = createFsFromVolume(vol);
-    const frag = new TopicContentsFragment('sample-command', fs, '/docs', '..');
+    const frag = new TopicContentsFragment('sample-command', fs, '/docs');
     const actual = frag.makeTopicTree();
     expect(actual).toBe(expected);
   });
@@ -238,11 +235,11 @@ Guides to setting up the product.
 
 ## Application Access
 
-Guides related to Application Access ([more info](../application-access.mdx)):
+Guides related to Application Access ([more info](application-access.mdx)):
 
-- [Application Access Page 1](../application-access/page1.mdx): Protecting App 1 with Teleport
-- [Application Access Page 2](../application-access/page2.mdx): Protecting App 2 with Teleport
-- [JWT guides](../application-access/jwt.mdx): Guides related to JWTs
+- [Application Access Page 1](application-access/page1.mdx): Protecting App 1 with Teleport
+- [Application Access Page 2](application-access/page2.mdx): Protecting App 2 with Teleport
+- [JWT guides](application-access/jwt.mdx): Guides related to JWTs
 `;
 
     const vol = Volume.fromJSON({
@@ -276,7 +273,7 @@ description: "Protecting JWT App 2 with Teleport"
 ---`,
     });
     const fs = createFsFromVolume(vol);
-    const frag = new TopicContentsFragment('sample-command', fs, '/docs', '..');
+    const frag = new TopicContentsFragment('sample-command', fs, '/docs');
     const actual = frag.makeTopicTree();
     expect(actual).toBe(expected);
   });
